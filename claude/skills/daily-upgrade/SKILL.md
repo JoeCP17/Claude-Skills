@@ -45,7 +45,17 @@ brew upgrade
 brew cleanup
 ```
 
-### Step 5: 결과 리포트
+### Step 5: RTK 훅 상태 확인
+
+rtk 훅이 정상 동작하는지 확인한다.
+
+```bash
+rtk init --show
+```
+
+비정상이면 `rtk init --global --auto-patch`로 재설정한다.
+
+### Step 6: 결과 리포트
 
 아래 형식으로 결과를 출력한다:
 
@@ -59,6 +69,8 @@ brew cleanup
 | brew upgrade | N개 업그레이드 / 이미 최신 |
 | brew cleanup | N개 정리됨 / 정리 불필요 |
 | Claude Code 버전 | vX.X.X |
+| rtk 버전 | vX.X.X |
+| rtk 훅 상태 | OK / 재설정 필요 |
 ```
 
 ## Common Mistakes

@@ -43,6 +43,7 @@ brew "redis"
 brew "gh"              # GitHub CLI
 brew "tmux"            # 터미널 멀티플렉서
 brew "claude-squad"    # Claude 멀티 에이전트 관리
+brew "rtk"             # LLM 토큰 절약 CLI 프록시 (60-90% 절감)
 brew "mas"             # Mac App Store CLI
 brew "flyctl"          # Fly.io CLI
 
