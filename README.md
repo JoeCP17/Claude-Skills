@@ -9,16 +9,40 @@ Claude-Skills/
 ├── homebrew/
 │   └── Brewfile                      # brew 설치 패키지 목록
 ├── shell/
-│   └── .zshrc                        # zsh 설정
+│   └── .zshrc                        # zsh 설정 (NVM, claude-squad 등)
 ├── claude/
-│   ├── settings/                     # Claude Code 설정 파일
+│   ├── CLAUDE.md                     # 글로벌 Claude 지시사항
+│   ├── RTK.md                        # RTK 메타 커맨드 레퍼런스
+│   ├── hooks/
+│   │   └── rtk-rewrite.sh           # RTK 자동 재작성 훅
+│   ├── settings/
+│   │   ├── settings.json            # 플러그인, 훅 설정
+│   │   └── settings.local.json      # 권한 화이트리스트
 │   ├── mcp/                          # MCP 서버 설정 (secrets 제외)
 │   ├── plugins/                      # 설치된 플러그인 목록
 │   └── skills/
 │       ├── superpowers/              # superpowers 플러그인 스킬 백업
-│       └── datadog-error-report/     # 커스텀 스킬
+│       ├── datadog-error-report/     # Datadog 에러 리포트 스킬
+│       └── daily-upgrade/            # brew/rtk 일일 업그레이드 스킬
 └── docs/
     └── GUIDELINE.md                  # 항목 추가 가이드라인
+```
+
+## RTK (Rust Token Killer)
+
+LLM 토큰 소비를 **60-90% 절감**하는 CLI 프록시. PreToolUse 훅으로 Claude Code의 모든 Bash 커맨드를 자동 재작성합니다.
+
+| 작업 | 절감률 |
+|------|--------|
+| git status/log/diff | -75~80% |
+| cat/read 파일 | -70% |
+| grep/rg 검색 | -80% |
+| test/build | -80~90% |
+| git add/commit/push | -92% |
+
+```bash
+rtk gain          # 토큰 절약 통계
+rtk discover      # 놓친 절약 기회 분석
 ```
 
 ## 설치된 MCP 서버
@@ -33,23 +57,32 @@ Claude-Skills/
 | mcp-installer | MCP 설치 도우미 |
 | sequential-thinking | 단계적 사고 지원 |
 | browsermcp | 브라우저 자동화 |
+| playwright | Playwright 브라우저 테스트 |
 | context7 | 라이브러리 최신 문서 조회 |
 | notion | Notion 연동 |
 | datadog-mcp | Datadog 모니터링 조회 |
 
 ## 설치된 플러그인
 
-| 플러그인 | 버전 |
+| 플러그인 | 설명 |
 |----------|------|
-| superpowers | 4.3.1 |
+| superpowers | TDD, 디버깅, 코드리뷰 등 개발 워크플로우 스킬 |
+| msbaek-tdd | TDD Red/Green/Blue 사이클 관리 |
+
+## 커스텀 스킬
+
+| 스킬 | 설명 |
+|------|------|
+| datadog-error-report | Datadog 에러 현황 종합 리포트 생성 |
+| daily-upgrade | brew 패키지 및 Claude Code 일일 업그레이드 |
 
 ## 빠른 시작 (새 PC 세팅)
 
 ```bash
 # 1. 레포 클론
-git clone https://github.com/JoeCP17/Claude-Skills.git ~/Claude-Skills
+git clone git@github.com:JoeCP17/Claude-Skills.git ~/Claude-Skills
 
-# 2. brew 패키지 일괄 설치
+# 2. brew 패키지 일괄 설치 (rtk 포함)
 brew bundle install --file=~/Claude-Skills/homebrew/Brewfile
 
 # 3. zshrc 적용
@@ -59,13 +92,18 @@ cat ~/Claude-Skills/shell/.zshrc >> ~/.zshrc && source ~/.zshrc
 cp ~/Claude-Skills/claude/settings/settings.json ~/.claude/settings.json
 cp ~/Claude-Skills/claude/settings/settings.local.json ~/.claude/settings.local.json
 
-# 5. 커스텀 스킬 복원
-cp -r ~/Claude-Skills/claude/skills/datadog-error-report ~/.claude/skills/
+# 5. RTK 훅 설치 (토큰 절약 자동화)
+rtk init --global --auto-patch
 
-# 6. 플러그인 설치
+# 6. 커스텀 스킬 복원
+mkdir -p ~/.claude/skills
+cp -r ~/Claude-Skills/claude/skills/datadog-error-report ~/.claude/skills/
+cp -r ~/Claude-Skills/claude/skills/daily-upgrade ~/.claude/skills/
+
+# 7. 플러그인 설치
 claude plugins install superpowers
 
-# 7. MCP 서버 등록 → claude/mcp/README.md 참고
+# 8. MCP 서버 등록 → claude/mcp/README.md 참고
 ```
 
 ## 가이드라인
