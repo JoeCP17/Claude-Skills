@@ -5,18 +5,26 @@
 ```
 Claude-Skills/
 ├── homebrew/
-│   └── Brewfile              # brew 설치 패키지 목록
+│   └── Brewfile                      # brew 설치 패키지 목록
 ├── shell/
-│   └── .zshrc                # zsh 설정 (alias, function, PATH, source 등)
+│   └── .zshrc                        # zsh 설정 (alias, function, PATH, source 등)
 ├── claude/
 │   ├── settings/
-│   │   ├── settings.json      # Claude Code 전역 설정
-│   │   └── settings.local.json # Claude Code 권한 설정
+│   │   ├── settings.json             # Claude Code 전역 설정
+│   │   └── settings.local.json       # Claude Code 권한 설정
+│   ├── mcp/
+│   │   ├── mcp.json                  # MCP 서버 설정 (secrets 제외)
+│   │   ├── .env.example              # 환경변수 템플릿
+│   │   └── README.md                 # 복원 명령어 모음
+│   ├── plugins/
+│   │   └── README.md                 # 설치된 플러그인 목록 및 복원 방법
 │   └── skills/
-│       └── <skill-name>/      # 커스텀 Claude 스킬
+│       ├── superpowers/              # superpowers 플러그인 스킬 (자동 제공)
+│       │   └── <skill-name>/SKILL.md
+│       └── <custom-skill>/           # 직접 만든 커스텀 스킬
 │           └── SKILL.md
 └── docs/
-    └── GUIDELINE.md           # 이 파일
+    └── GUIDELINE.md                  # 이 파일
 ```
 
 ---
@@ -65,7 +73,44 @@ export PATH="$PATH:/new/path"
 
 ---
 
-### 3. Claude 스킬 추가 시
+### 3. MCP 서버 추가 시
+
+**Step 1**: `claude/mcp/mcp.json`에 서버 항목 추가 (secrets는 `${ENV_VAR}` 형태로)
+
+**Step 2**: 토큰이 필요하면 `claude/mcp/.env.example`에 변수명만 추가
+
+**Step 3**: `claude/mcp/README.md`의 복원 명령어 섹션에 `claude mcp add ...` 명령 추가
+
+```bash
+# 예시: 토큰 없는 서버
+claude mcp add <name> -s user -- npx -y <package>
+
+# 예시: 토큰 필요한 서버
+claude mcp add <name> -s user -e TOKEN=<your_token> -- npx -y <package>
+```
+
+**규칙:**
+- 실제 토큰/API 키는 절대 커밋하지 않음 (`${PLACEHOLDER}` 사용)
+- `.env.example`에 변수명과 설명만 기록
+
+---
+
+### 4. Claude 플러그인 추가 시
+
+`claude/plugins/README.md`의 설치 플러그인 표에 항목 추가:
+
+```bash
+# 플러그인 설치
+claude plugins install <plugin-name>
+```
+
+**규칙:**
+- 공식 플러그인은 README에 기록만 (파일 복사 불필요)
+- 플러그인이 제공하는 스킬 목록도 함께 업데이트
+
+---
+
+### 5. Claude 커스텀 스킬 추가 시
 
 `claude/skills/<skill-name>/SKILL.md` 파일 추가 후 커밋:
 
@@ -77,12 +122,13 @@ cp -r ~/.claude/skills/<new-skill> ~/Claude-Skills/claude/skills/
 ```
 
 **규칙:**
-- SKILL.md는 실제 `~/.claude/skills/` 와 동기화 유지
+- `claude/skills/superpowers/`는 플러그인 업데이트 시에만 갱신 (직접 수정 금지)
+- 커스텀 스킬은 `claude/skills/<skill-name>/` 하위에 직접 추가
 - 스킬 파일에 업무 기밀 정보 포함 금지
 
 ---
 
-### 4. Claude 설정 변경 시
+### 6. Claude 설정 변경 시
 
 `claude/settings/settings.json` 또는 `settings.local.json` 수정 후 커밋:
 
@@ -102,6 +148,8 @@ cp -r ~/.claude/skills/<new-skill> ~/Claude-Skills/claude/skills/
 type:
   brew     - Brewfile 변경
   shell    - .zshrc 변경
+  mcp      - MCP 서버 추가/변경
+  plugin   - 플러그인 추가/변경
   skill    - Claude 스킬 추가/수정
   settings - Claude 설정 변경
   docs     - 문서 변경
@@ -111,6 +159,8 @@ type:
 ```
 brew: add gh (GitHub CLI)
 shell: add cs function for claude-squad
+mcp: add notion MCP server
+plugin: add superpowers v4.3.1
 skill: add datadog-error-report skill
 settings: allow mcp__github__get_file_contents permission
 ```
@@ -127,13 +177,19 @@ git clone https://github.com/JoeCP17/Claude-Skills.git ~/Claude-Skills
 brew bundle install --file=~/Claude-Skills/homebrew/Brewfile
 
 # 3. zshrc 적용
-cat ~/Claude-Skills/shell/.zshrc >> ~/.zshrc
-source ~/.zshrc
+cat ~/Claude-Skills/shell/.zshrc >> ~/.zshrc && source ~/.zshrc
 
 # 4. Claude 설정 복원
 cp ~/Claude-Skills/claude/settings/settings.json ~/.claude/settings.json
 cp ~/Claude-Skills/claude/settings/settings.local.json ~/.claude/settings.local.json
 
-# 5. Claude 스킬 복원
-cp -r ~/Claude-Skills/claude/skills/* ~/.claude/skills/
+# 5. Claude 커스텀 스킬 복원 (superpowers 제외 - 플러그인 설치로 자동 제공)
+cp -r ~/Claude-Skills/claude/skills/datadog-error-report ~/.claude/skills/
+
+# 6. Claude 플러그인 설치
+claude plugins install superpowers
+
+# 7. MCP 서버 등록
+# claude/mcp/README.md의 복원 명령어 참고
+# 환경변수는 claude/mcp/.env.example을 복사해 실제 값 입력 후 사용
 ```

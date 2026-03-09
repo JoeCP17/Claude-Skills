@@ -1,0 +1,99 @@
+{
+  "mcpServers": {
+    "jetbrains": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@jetbrains/mcp-proxy"],
+      "scope": "user"
+    },
+    "github": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      },
+      "scope": "user"
+    },
+    "atlassian": {
+      "type": "sse",
+      "url": "https://mcp.atlassian.com/v1/sse",
+      "scope": "user"
+    },
+    "mysql-mcp-server": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "awslabs.mysql-mcp-server@latest",
+        "--hostname", "${MYSQL_HOSTNAME}",
+        "--secret_arn", "${MYSQL_SECRET_ARN}",
+        "--database", "${MYSQL_DATABASE}",
+        "--region", "${AWS_REGION}",
+        "--readonly", "True"
+      ],
+      "env": {
+        "AWS_PROFILE": "default",
+        "AWS_REGION": "${AWS_REGION}",
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "scope": "user"
+    },
+    "taskmaster-ai": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "--package=task-master-ai", "task-master-ai"],
+      "env": {
+        "AWS_REGION": "us-east-1",
+        "AWS_PROFILE": "default",
+        "BEDROCK_ENABLED": "true",
+        "BEDROCK_MODEL_ID": "us.anthropic.claude-sonnet-4-20250514-v1:0"
+      },
+      "scope": "user"
+    },
+    "mcp-installer": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@anaisbetts/mcp-installer"],
+      "scope": "user"
+    },
+    "sequential-thinking": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "scope": "user"
+    },
+    "browsermcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@browsermcp/mcp@latest"],
+      "scope": "user"
+    },
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "env": {
+        "DEFAULT_MINIMUM_TOKENS": "6000"
+      },
+      "scope": "user"
+    },
+    "notion": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@notionhq/notion-mcp-server"],
+      "env": {
+        "NOTION_TOKEN": "${NOTION_TOKEN}"
+      },
+      "scope": "user"
+    },
+    "datadog-mcp": {
+      "type": "http",
+      "url": "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp",
+      "headers": {
+        "DD_API_KEY": "${DD_API_KEY}",
+        "DD_APPLICATION_KEY": "${DD_APPLICATION_KEY}"
+      },
+      "scope": "user"
+    }
+  }
+}

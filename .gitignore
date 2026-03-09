@@ -1,9 +1,11 @@
 # 업무 관련 민감 정보 (절대 커밋 금지)
 .env
-.env.*
+.env.local
 *.secret
 *credentials*
 *password*
+
+# .env.example은 커밋 허용 (실제 값 없는 템플릿)
 
 # macOS
 .DS_Store
