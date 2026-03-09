@@ -86,6 +86,12 @@
       },
       "scope": "user"
     },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"],
+      "scope": "user"
+    },
     "datadog-mcp": {
       "type": "http",
       "url": "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp",
