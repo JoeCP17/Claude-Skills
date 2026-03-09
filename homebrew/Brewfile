@@ -1,0 +1,39 @@
+# Brewfile - Homebrew 패키지 목록
+# 복원 방법: brew bundle install
+# 생성일: 2026-03-09
+
+# ---------------------------------------------------------------------------
+# Formulae (CLI 도구 및 라이브러리)
+# ---------------------------------------------------------------------------
+
+# AWS CLI
+brew "awscli"
+
+# Node.js 버전 관리
+brew "nvm"
+brew "node"
+brew "yarn"
+
+# Python
+brew "python@3.13"
+brew "uv"          # 빠른 Python 패키지 매니저
+
+# 네트워크/유틸
+brew "wget"
+brew "mole"        # SSH 터널링 도구
+
+# DB
+brew "mysql"
+
+# 개발 도구
+brew "gh"          # GitHub CLI
+brew "tmux"        # 터미널 멀티플렉서
+brew "claude-squad" # Claude 멀티 에이전트 관리
+
+# ---------------------------------------------------------------------------
+# Casks (GUI 앱)
+# ---------------------------------------------------------------------------
+
+cask "claude-code"  # Claude Code IDE
+cask "ngrok"        # 로컬 서버 터널링
+cask "openlens"     # Kubernetes IDE

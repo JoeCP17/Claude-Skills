@@ -1,0 +1,15 @@
+# 업무 관련 민감 정보 (절대 커밋 금지)
+.env
+.env.*
+*.secret
+*credentials*
+*password*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# 임시 파일
+*.log
+*.tmp

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(which npx:*)",
+      "Bash(which uvx:*)",
+      "Bash(claude mcp:*)",
+      "mcp__github__search_repositories",
+      "mcp__github__get_pull_request",
+      "Bash(gh pr:*)",
+      "Bash(brew install:*)",
+      "mcp__datadog__search-logs",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(python3:*)",
+      "mcp__datadog-mcp__search_datadog_incidents",
+      "mcp__datadog-mcp__search_datadog_monitors",
+      "mcp__datadog-mcp__search_datadog_events",
+      "mcp__datadog-mcp__search_datadog_logs",
+      "mcp__atlassian__getJiraIssue",
+      "mcp__github__get_file_contents"
+    ]
+  }
+}
