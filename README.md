@@ -23,7 +23,8 @@ Claude-Skills/
 │   └── skills/
 │       ├── superpowers/              # superpowers 플러그인 스킬 백업
 │       ├── datadog-error-report/     # Datadog 에러 리포트 스킬
-│       └── daily-upgrade/            # brew/rtk 일일 업그레이드 스킬
+│       ├── daily-upgrade/            # brew/rtk 일일 업그레이드 스킬
+│       └── wrap/                     # 세션 작업 내용 메모리 저장 스킬
 └── docs/
     └── GUIDELINE.md                  # 항목 추가 가이드라인
 ```
@@ -75,6 +76,7 @@ rtk discover      # 놓친 절약 기회 분석
 |------|------|
 | datadog-error-report | Datadog 에러 현황 종합 리포트 생성 |
 | daily-upgrade | brew 패키지 및 Claude Code 일일 업그레이드 |
+| wrap | 세션 작업 내용을 메모리에 저장하여 다음 세션에서 컨텍스트 복원 |
 
 ## 빠른 시작 (새 PC 세팅)
 
@@ -99,6 +101,7 @@ rtk init --global --auto-patch
 mkdir -p ~/.claude/skills
 cp -r ~/Claude-Skills/claude/skills/datadog-error-report ~/.claude/skills/
 cp -r ~/Claude-Skills/claude/skills/daily-upgrade ~/.claude/skills/
+cp -r ~/Claude-Skills/claude/skills/wrap ~/.claude/skills/
 
 # 7. 플러그인 설치
 claude plugins install superpowers
