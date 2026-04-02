@@ -87,26 +87,29 @@ git clone git@github.com:JoeCP17/Claude-Skills.git ~/Claude-Skills
 # 2. brew 패키지 일괄 설치 (rtk 포함)
 brew bundle install --file=~/Claude-Skills/homebrew/Brewfile
 
-# 3. zshrc 적용
+# 3. Claude Code 네이티브 설치 (Homebrew가 아닌 공식 설치 방식)
+curl -fsSL https://claude.ai/install.sh | sh
+
+# 4. zshrc 적용
 cat ~/Claude-Skills/shell/.zshrc >> ~/.zshrc && source ~/.zshrc
 
-# 4. Claude 설정 복원
+# 5. Claude 설정 복원
 cp ~/Claude-Skills/claude/settings/settings.json ~/.claude/settings.json
 cp ~/Claude-Skills/claude/settings/settings.local.json ~/.claude/settings.local.json
 
-# 5. RTK 훅 설치 (토큰 절약 자동화)
+# 6. RTK 훅 설치 (토큰 절약 자동화)
 rtk init --global --auto-patch
 
-# 6. 커스텀 스킬 복원
+# 7. 커스텀 스킬 복원
 mkdir -p ~/.claude/skills
 cp -r ~/Claude-Skills/claude/skills/datadog-error-report ~/.claude/skills/
 cp -r ~/Claude-Skills/claude/skills/daily-upgrade ~/.claude/skills/
 cp -r ~/Claude-Skills/claude/skills/wrap ~/.claude/skills/
 
-# 7. 플러그인 설치
+# 8. 플러그인 설치
 claude plugins install superpowers
 
-# 8. MCP 서버 등록 → claude/mcp/README.md 참고
+# 9. MCP 서버 등록 → claude/mcp/README.md 참고
 ```
 
 ## 가이드라인

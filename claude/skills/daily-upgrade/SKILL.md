@@ -19,29 +19,35 @@ Bring the entire dev environment to latest: Homebrew packages, Brewfile sync, an
    brew bundle install --file=~/Desktop/Claude-Skills/homebrew/Brewfile
    ```
 
-3. **Upgrade all packages** — formulae and casks (includes Claude Code).
+3. **Upgrade all packages** — formulae and casks.
    ```bash
    brew upgrade
    ```
 
-4. **Cleanup** — remove stale versions to free disk space. Only useful after upgrade creates outdated versions.
+4. **Upgrade Claude Code** — 네이티브 설치이므로 brew 대신 자체 업그레이드 사용.
+   ```bash
+   claude update
+   ```
+
+5. **Cleanup** — remove stale versions to free disk space. Only useful after upgrade creates outdated versions.
    ```bash
    brew cleanup
    ```
 
-5. **Verify RTK hooks** — the token-saving proxy can break after upgrades, so always check.
+6. **Verify RTK hooks** — the token-saving proxy can break after upgrades, so always check.
    ```bash
    rtk init --show
    ```
    If broken, repair with `rtk init --global --auto-patch`.
 
-6. **Report results**:
+7. **Report results**:
 
    | Item | Result |
    |------|--------|
    | brew update | OK / failure reason |
    | Brewfile sync | N packages installed / already up to date |
    | brew upgrade | N upgraded / already up to date |
+   | claude update | OK / already latest |
    | brew cleanup | N cleaned / nothing to clean |
    | Claude Code version | vX.X.X |
    | rtk version | vX.X.X |

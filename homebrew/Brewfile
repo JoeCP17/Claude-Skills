@@ -55,7 +55,6 @@ brew "youtube-dl"      # 동영상 다운로더
 # Casks (GUI 앱)
 # ---------------------------------------------------------------------------
 
-cask "claude-code"     # Claude Code IDE
 cask "ngrok"           # 로컬 서버 터널링
 cask "openlens"        # Kubernetes IDE
 cask "discord"         # 커뮤니케이션
