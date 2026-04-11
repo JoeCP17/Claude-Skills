@@ -15,6 +15,9 @@
 | context7 | stdio | `@upstash/context7-mcp` | 라이브러리 최신 문서 조회 |
 | notion | stdio | `@notionhq/notion-mcp-server` | Notion 페이지/DB 연동 |
 | datadog-mcp | HTTP | `mcp.datadoghq.com` | Datadog 로그/모니터 조회 |
+| playwright | stdio | `@playwright/mcp` | 브라우저 자동화 (Playwright) |
+| claude.ai Gmail | HTTP | `gmail.mcp.claude.com` | Gmail 연동 (OAuth) |
+| claude.ai Google Calendar | HTTP | `gcal.mcp.claude.com` | Google Calendar 연동 (OAuth) |
 
 ## 복원 방법 (새 PC 세팅)
 
@@ -31,6 +34,7 @@ claude mcp add jetbrains -s user -- npx -y @jetbrains/mcp-proxy
 claude mcp add mcp-installer -s user -- npx @anaisbetts/mcp-installer
 claude mcp add sequential-thinking -s user -- npx -y @modelcontextprotocol/server-sequential-thinking
 claude mcp add browsermcp -s user -- npx @browsermcp/mcp@latest
+claude mcp add playwright -s user -- npx @playwright/mcp@latest
 claude mcp add context7 -s user -e DEFAULT_MINIMUM_TOKENS=6000 -- npx -y @upstash/context7-mcp
 claude mcp add taskmaster-ai -s user \
   -e AWS_REGION=us-east-1 \

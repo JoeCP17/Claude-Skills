@@ -49,7 +49,7 @@ brew "flyctl"          # Fly.io CLI
 
 # 유틸리티
 brew "convmv"          # 파일명 인코딩 변환
-brew "youtube-dl"      # 동영상 다운로더
+brew "yt-dlp"          # 동영상 다운로더 (youtube-dl 후속)
 
 # ---------------------------------------------------------------------------
 # Casks (GUI 앱)

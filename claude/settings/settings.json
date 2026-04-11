@@ -1,5 +1,49 @@
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/agent-viz/start.sh auto"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/agent-viz/hook-handler.sh session_start"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/agent-viz/hook-handler.sh thinking_start"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/agent-viz/hook-handler.sh thinking_end"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/agent-viz/hook-handler.sh session_end"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
@@ -7,6 +51,34 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/rtk-rewrite.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/agent-viz/hook-handler.sh agent_start"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/agent-viz/hook-handler.sh tool_use"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/agent-viz/hook-handler.sh agent_done"
           }
         ]
       }
@@ -20,7 +92,8 @@
     "msbaek-tdd@msbaek-claude-plugins": true,
     "superpowers@claude-plugins-official": true,
     "everything-claude-code@everything-claude-code": true,
-    "anthropic-agent-skills@anthropic-agent-skills": true
+    "anthropic-agent-skills@anthropic-agent-skills": true,
+    "bo@ktown4u-plugins": true
   },
   "extraKnownMarketplaces": {
     "everything-claude-code": {
@@ -33,6 +106,12 @@
       "source": {
         "source": "github",
         "repo": "anthropics/skills"
+      }
+    },
+    "ktown4u-plugins": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/ktown4u/ktown4u-plugins.git"
       }
     }
   },
