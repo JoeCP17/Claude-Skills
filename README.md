@@ -23,6 +23,7 @@ Claude-Skills/
 │   │   ├── agents.md                # 에이전트 자동 위임 결정 트리
 │   │   ├── session-memory-search.md # 세션/메모리 검색 시 agf 강제 사용
 │   │   ├── java-lsp-exploration.md  # Java 탐색 시 jdtls LSP 강제 사용
+│   │   ├── token-optimization.md    # 출력 분리/결정론적 위임/U-curve 등 토큰 절약
 │   │   ├── development-workflow.md  # 기능 개발 파이프라인
 │   │   ├── git-workflow.md          # 커밋/PR 워크플로우
 │   │   ├── performance.md           # 모델 선택/컨텍스트 전략
@@ -45,7 +46,9 @@ Claude-Skills/
 │       ├── wrap/                     # 세션 작업 내용 메모리 저장 스킬
 │       ├── commit/                   # Conventional Commits 자동 생성
 │       ├── commit-push/              # 커밋 + 푸시 원스텝
-│       └── pr/                       # rebase + PR 생성
+│       ├── pr/                       # rebase + PR 생성
+│       ├── obsidian-vault/           # Obsidian/마크다운 작업, markdown-oxide LSP 가이드
+│       └── code-search-efficient/    # ast-grep/fd/rg/LSP 도구 선택 결정 트리
 └── docs/
     └── GUIDELINE.md                  # 항목 추가 가이드라인
 ```
@@ -120,6 +123,46 @@ claude plugin list | grep jdtls            # enabled 확인
 
 `claude-code-lsps` 마켓플레이스는 TypeScript(`vtsls`), Rust(`rust-analyzer`), Go(`gopls`), Python(`basedpyright`), Kotlin(`kotlin-lsp`) 등 다수 LSP를 제공합니다. 필요 시 `claude plugin install <name>@claude-code-lsps` 로 추가.
 
+## 토큰 최적화 (msbaek/dotfiles 패턴 차용)
+
+[msbaek/dotfiles](https://github.com/msbaek/dotfiles) 의 `.claude/CLAUDE.md` 에서 검증된 토큰·컨텍스트 절약 패턴을 `claude/rules/token-optimization.md` 와 `claude/skills/code-search-efficient/`, `claude/skills/obsidian-vault/` 로 분리해 적용했습니다. RTK 훅이 **명령어 출력 단계**에서 토큰을 깎는 반면, 이 규칙/스킬은 **Claude의 행동·도구 선택 단계**에서 토큰을 깎습니다.
+
+### 핵심 원칙 (rules/token-optimization.md)
+
+| 원칙 | 효과 |
+|------|------|
+| **Output Offloading** | 2KB 이상 결과는 `/tmp/` 파일로 빼고 컨텍스트엔 경로+요약만 |
+| **Deterministic Offload** | 카운트/파싱/반복 작업은 AI 대신 셸 스크립트로 |
+| **U-shaped attention** | 중요 정보는 응답 시작/끝 (가운데 묻지 말 것) |
+| **File Reading Safety** | 1000줄 이상 파일은 `offset/limit` 강제 |
+| **Subagent Multiplier** | 멀티에이전트 ≈ 15× 토큰. 단일 에이전트+도구(~4×) 우선 |
+| **Telephone-game 방지** | 서브에이전트 결과 재요약 금지 (50% 정보 손실) |
+| **Anchored Compaction** | 80% 컨텍스트 도달 시 5섹션 증분 요약 (전체 재요약 금지) |
+
+### 도구 우선순위 (skills/code-search-efficient)
+
+```
+Java 심볼     → jdtls LSP        (rules/java-lsp-exploration.md)
+구조 패턴     → sg (ast-grep)   ← AST 매칭, 정규식보다 정확
+텍스트 검색   → rg (Grep tool)
+파일명        → fd / Glob
+큰 파일 구조  → LSP documentSymbol → Read offset/limit fallback
+백링크/마크다운 → markdown-oxide LSP / obsidian-vault skill
+```
+
+### 새로 설치된 CLI
+
+| 도구 | 용도 |
+|------|------|
+| `fd` | `find` 대체. 빠르고 `.gitignore` 자동 존중 |
+| `ast-grep` (`sg`) | AST 패턴 매칭. `sg --lang java -p '$x.foo($$$)'` 같은 구문 인식 검색·일괄 변환 |
+
+Brewfile에 포함되어 새 PC에서 자동 설치됩니다.
+
+### Obsidian/마크다운 (skills/obsidian-vault)
+
+`markdown-oxide` LSP 우선, 미설치 시 `rg` fallback. Zettelkasten 폴더 구조(000-SLIPBOX/001-INBOX/...), Hierarchical tags, 토큰 절약 작업 패턴을 명문화했습니다. 실제 vault가 있을 때 자동으로 적용됩니다.
+
 ## 설치된 MCP 서버
 
 | 서버 | 용도 |
@@ -154,6 +197,8 @@ claude plugin list | grep jdtls            # enabled 확인
 | commit | Conventional Commits 형식의 커밋 메시지 자동 생성 |
 | commit-push | 커밋 + 원격 푸시를 원스텝으로 처리 |
 | pr | 현재 브랜치를 base에 rebase 후 GitHub PR 생성 |
+| obsidian-vault | Obsidian/마크다운 작업, markdown-oxide LSP 우선, 토큰 절약 패턴 |
+| code-search-efficient | 코드 탐색 시 ast-grep/fd/rg/LSP 도구 선택 결정 트리 |
 
 ## 커스텀 서브 에이전트
 
