@@ -22,6 +22,7 @@ Claude-Skills/
 │   ├── rules/                        # 글로벌 규칙 (CLAUDE.md에서 @import)
 │   │   ├── agents.md                # 에이전트 자동 위임 결정 트리
 │   │   ├── session-memory-search.md # 세션/메모리 검색 시 agf 강제 사용
+│   │   ├── java-lsp-exploration.md  # Java 탐색 시 jdtls LSP 강제 사용
 │   │   ├── development-workflow.md  # 기능 개발 파이프라인
 │   │   ├── git-workflow.md          # 커밋/PR 워크플로우
 │   │   ├── performance.md           # 모델 선택/컨텍스트 전략
@@ -80,6 +81,44 @@ agf watch                          # 실시간 세션 대시보드
 ```
 
 설치: `brew install agf` (Brewfile에 포함). 자세한 트리거/안티패턴은 [session-memory-search.md](claude/rules/session-memory-search.md) 참고.
+
+## Java LSP 기반 코드 탐색 (jdtls)
+
+Claude Code 2.0.74+ 의 LSP 지원을 활용해 **Java 코드 탐색 시 `grep`/`find` 대신 Eclipse JDT Language Server**를 직접 호출합니다. `claude/rules/java-lsp-exploration.md` 규칙으로 강제되며, 정의/참조/호출 계층/심볼 검색이 IDE 수준 정확도로 수행됩니다.
+
+### 제공 기능
+
+| LSP 함수 | 용도 |
+|----------|------|
+| `workspaceSymbol` | 워크스페이스 전체에서 클래스/메서드 검색 |
+| `documentSymbol` | 파일 내 심볼 트리 (Read 대체) |
+| `goToDefinition` | 심볼 정의 위치 점프 |
+| `goToImplementation` | 인터페이스/추상 메서드 → 구현체 |
+| `findReferences` | 심볼의 모든 참조 찾기 |
+| `incomingCalls` / `outgoingCalls` | 메서드 호출 계층 추적 |
+| `hover` | 타입·시그니처·Javadoc 조회 |
+
+### 설치
+
+```bash
+# 1. jdtls 바이너리 (Brewfile에 포함됨)
+brew install jdtls
+
+# 2. claude-code-lsps 마켓플레이스 등록
+claude plugin marketplace add Piebald-AI/claude-code-lsps
+
+# 3. jdtls 플러그인 설치 (반드시 claude-code-lsps 마켓플레이스 선택)
+claude plugin install jdtls@claude-code-lsps
+
+# 4. Claude Code 재시작 후 검증
+claude plugin list | grep jdtls            # enabled 확인
+```
+
+> ⚠️ `jdtls-lsp@claude-plugins-official` 은 README만 있고 LSP 설정이 없으므로 **설치 금지**. 반드시 `@claude-code-lsps` 마켓플레이스 버전을 사용하세요.
+
+### 다른 언어 LSP 추가
+
+`claude-code-lsps` 마켓플레이스는 TypeScript(`vtsls`), Rust(`rust-analyzer`), Go(`gopls`), Python(`basedpyright`), Kotlin(`kotlin-lsp`) 등 다수 LSP를 제공합니다. 필요 시 `claude plugin install <name>@claude-code-lsps` 로 추가.
 
 ## 설치된 MCP 서버
 
