@@ -13,6 +13,22 @@ Claude-Skills/
 ├── claude/
 │   ├── CLAUDE.md                     # 글로벌 Claude 지시사항
 │   ├── RTK.md                        # RTK 메타 커맨드 레퍼런스
+│   ├── agents/                       # 커스텀 서브 에이전트 정의
+│   │   ├── planner.md               # 설계/계획 수립
+│   │   ├── coder.md                 # 구현/리팩토링
+│   │   ├── debugger.md              # 버그 분석/수정
+│   │   ├── researcher.md            # 조사/분석/문서화
+│   │   └── reviewer.md              # 코드 리뷰/품질 검증
+│   ├── rules/                        # 글로벌 규칙 (CLAUDE.md에서 @import)
+│   │   ├── agents.md                # 에이전트 자동 위임 결정 트리
+│   │   ├── development-workflow.md  # 기능 개발 파이프라인
+│   │   ├── git-workflow.md          # 커밋/PR 워크플로우
+│   │   ├── performance.md           # 모델 선택/컨텍스트 전략
+│   │   ├── coding-style.md          # 코딩 스타일 가이드
+│   │   ├── patterns.md              # 공통 패턴
+│   │   ├── security.md              # 보안 가이드
+│   │   ├── testing.md               # 테스트 가이드
+│   │   └── hooks.md                 # 훅 사용 가이드
 │   ├── hooks/
 │   │   └── rtk-rewrite.sh           # RTK 자동 재작성 훅
 │   ├── settings/
@@ -24,7 +40,10 @@ Claude-Skills/
 │       ├── superpowers/              # superpowers 플러그인 스킬 백업
 │       ├── datadog-error-report/     # Datadog 에러 리포트 스킬
 │       ├── daily-upgrade/            # brew/rtk 일일 업그레이드 스킬
-│       └── wrap/                     # 세션 작업 내용 메모리 저장 스킬
+│       ├── wrap/                     # 세션 작업 내용 메모리 저장 스킬
+│       ├── commit/                   # Conventional Commits 자동 생성
+│       ├── commit-push/              # 커밋 + 푸시 원스텝
+│       └── pr/                       # rebase + PR 생성
 └── docs/
     └── GUIDELINE.md                  # 항목 추가 가이드라인
 ```
@@ -77,6 +96,21 @@ rtk discover      # 놓친 절약 기회 분석
 | datadog-error-report | Datadog 에러 현황 종합 리포트 생성 |
 | daily-upgrade | brew 패키지 및 Claude Code 일일 업그레이드 |
 | wrap | 세션 작업 내용을 메모리에 저장하여 다음 세션에서 컨텍스트 복원 |
+| commit | Conventional Commits 형식의 커밋 메시지 자동 생성 |
+| commit-push | 커밋 + 원격 푸시를 원스텝으로 처리 |
+| pr | 현재 브랜치를 base에 rebase 후 GitHub PR 생성 |
+
+## 커스텀 서브 에이전트
+
+`claude/agents/`에 정의된 5개 에이전트는 `claude/rules/agents.md`의 결정 트리를 통해 **자동 위임**됩니다.
+
+| 에이전트 | 역할 | 트리거 |
+|----------|------|--------|
+| **planner** | 설계/계획 수립 | 설계, 계획, PRD, ADR, 아키텍처, 이관 전략 |
+| **coder** | 구현/리팩토링 | 구현, 추가, 만들어, 리팩토링, implement, refactor |
+| **debugger** | 버그 분석/수정 | 왜 안 돼, 에러, CS, 장애, 배송ID 기반 조사 |
+| **researcher** | 조사/분석/문서화 | 조사, 분석, 비교, 리포트, Datadog 트래픽 분석 |
+| **reviewer** | 코드 리뷰/품질 검증 | 리뷰, PR 리뷰, 품질 검증, 보안 검토 (코드 변경 직후 자동) |
 
 ## 빠른 시작 (새 PC 세팅)
 
@@ -105,11 +139,19 @@ mkdir -p ~/.claude/skills
 cp -r ~/Claude-Skills/claude/skills/datadog-error-report ~/.claude/skills/
 cp -r ~/Claude-Skills/claude/skills/daily-upgrade ~/.claude/skills/
 cp -r ~/Claude-Skills/claude/skills/wrap ~/.claude/skills/
+cp -r ~/Claude-Skills/claude/skills/commit ~/.claude/skills/
+cp -r ~/Claude-Skills/claude/skills/commit-push ~/.claude/skills/
+cp -r ~/Claude-Skills/claude/skills/pr ~/.claude/skills/
 
-# 8. 플러그인 설치
+# 8. 커스텀 에이전트 + 규칙 복원
+mkdir -p ~/.claude/agents ~/.claude/rules
+cp -r ~/Claude-Skills/claude/agents/* ~/.claude/agents/
+cp -r ~/Claude-Skills/claude/rules/* ~/.claude/rules/
+
+# 9. 플러그인 설치
 claude plugins install superpowers
 
-# 9. MCP 서버 등록 → claude/mcp/README.md 참고
+# 10. MCP 서버 등록 → claude/mcp/README.md 참고
 ```
 
 ## 가이드라인
