@@ -21,6 +21,7 @@ Claude-Skills/
 │   │   └── reviewer.md              # 코드 리뷰/품질 검증
 │   ├── rules/                        # 글로벌 규칙 (CLAUDE.md에서 @import)
 │   │   ├── agents.md                # 에이전트 자동 위임 결정 트리
+│   │   ├── session-memory-search.md # 세션/메모리 검색 시 agf 강제 사용
 │   │   ├── development-workflow.md  # 기능 개발 파이프라인
 │   │   ├── git-workflow.md          # 커밋/PR 워크플로우
 │   │   ├── performance.md           # 모델 선택/컨텍스트 전략
@@ -64,6 +65,21 @@ LLM 토큰 소비를 **60-90% 절감**하는 CLI 프록시. PreToolUse 훅으로
 rtk gain          # 토큰 절약 통계
 rtk discover      # 놓친 절약 기회 분석
 ```
+
+## agf (AI Agent Session Finder)
+
+`agf`는 Claude Code / Codex / Gemini 등 로컬에 있는 **모든 에이전트 세션을 fuzzy 검색·재개**하는 CLI입니다. `claude/rules/session-memory-search.md`에 등록되어 있어, **"세션 찾아줘", "메모리 검색", "지난 대화 찾아줘"** 같은 요청이 들어오면 Claude가 자동으로 `agf`를 호출합니다.
+
+```bash
+agf <keyword>                      # fuzzy TUI 검색
+agf resume <keyword>               # 최고 매치 세션 바로 재개
+agf list --agent claude --limit 20 # 스크립트용 plain text 목록
+agf list --format json             # JSON 파싱용
+agf stats                          # 에이전트·프로젝트별 통계
+agf watch                          # 실시간 세션 대시보드
+```
+
+설치: `brew install agf` (Brewfile에 포함). 자세한 트리거/안티패턴은 [session-memory-search.md](claude/rules/session-memory-search.md) 참고.
 
 ## 설치된 MCP 서버
 
