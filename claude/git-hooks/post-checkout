@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Fires after `git checkout` and `git clone`.
+# Args: $1=prev_head, $2=new_head, $3=1 if branch checkout else 0
+# Only re-index on branch checkout to avoid churn on file-level checkouts.
+[ "${3:-0}" = "1" ] || exit 0
+exec "$(dirname "$0")/_hedwig-cg-update.sh"

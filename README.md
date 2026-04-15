@@ -23,6 +23,7 @@ Claude-Skills/
 │   │   ├── agents.md                # 에이전트 자동 위임 결정 트리
 │   │   ├── session-memory-search.md # 세션/메모리 검색 시 agf 강제 사용
 │   │   ├── java-lsp-exploration.md  # Java 탐색 시 jdtls LSP 강제 사용
+│   │   ├── hedwig-cg.md             # 로컬 코드 그래프 + 5-signal 하이브리드 검색
 │   │   ├── token-optimization.md    # 출력 분리/결정론적 위임/U-curve 등 토큰 절약
 │   │   ├── development-workflow.md  # 기능 개발 파이프라인
 │   │   ├── git-workflow.md          # 커밋/PR 워크플로우
@@ -32,6 +33,8 @@ Claude-Skills/
 │   │   ├── security.md              # 보안 가이드
 │   │   ├── testing.md               # 테스트 가이드
 │   │   └── hooks.md                 # 훅 사용 가이드
+│   ├── bin/
+│   │   └── hedwig-cg-auto           # 중앙 DB 라우팅 래퍼 (per-repo 흔적 없음)
 │   ├── hooks/
 │   │   └── rtk-rewrite.sh           # RTK 자동 재작성 훅
 │   ├── settings/
@@ -122,6 +125,64 @@ claude plugin list | grep jdtls            # enabled 확인
 ### 다른 언어 LSP 추가
 
 `claude-code-lsps` 마켓플레이스는 TypeScript(`vtsls`), Rust(`rust-analyzer`), Go(`gopls`), Python(`basedpyright`), Kotlin(`kotlin-lsp`) 등 다수 LSP를 제공합니다. 필요 시 `claude plugin install <name>@claude-code-lsps` 로 추가.
+
+## hedwig-cg (로컬 코드 그래프 검색)
+
+[`hedwig-cg`](https://github.com/hedwig-ai/hedwig-code-graph) 는 레포지토리에서 **5-signal 하이브리드 검색**(code vector + text vector + graph expansion + FTS5 keyword + community → RRF fusion → Cross-Encoder rerank)을 **100% 로컬**로 제공합니다. 수천 파일 규모 레포에서 Claude가 grep 루프 대신 먼저 "어느 파일부터 읽어야 하는지" 지도를 얻어 **토큰·시간을 절감**합니다.
+
+### 중앙 DB 아키텍처 (per-repo `.hedwig-cg/` 없음)
+
+`claude/bin/hedwig-cg-auto` 래퍼가 모든 호출을 **중앙 경로** (`$HEDWIG_CG_DB_ROOT`, 기본 `~/.hedwig-cg/dbs/<repo>/`) 로 라우팅합니다. 레포 작업 디렉토리는 그대로 깨끗하게 유지되고, 새 레포는 첫 검색 시 자동 빌드됩니다.
+
+```bash
+hedwig-cg-auto search "payment event consumer"   # 필요 시 자동 빌드 후 검색
+hedwig-cg-auto where                             # 현재 레포 DB 경로/상태
+hedwig-cg-auto list                              # 인덱싱된 모든 레포 목록
+hedwig-cg-auto update                            # 증분 재빌드
+hedwig-cg-auto rebuild                           # 풀 재빌드
+hedwig-cg-auto clean                             # 이 레포 DB 삭제
+```
+
+환경변수:
+- `HEDWIG_CG_DB_ROOT` — DB 저장 루트 (기본 `~/.hedwig-cg/dbs`)
+- `HEDWIG_CG_AUTO_BUILD=0` — 자동 빌드 비활성
+- `HEDWIG_CG_BUILD_ARGS` — 빌드 추가 인자 (e.g. `--max-file-size 200000`)
+
+### 역할 분담
+
+| 상황 | 1순위 |
+|------|-------|
+| Java 심볼 정확 탐색 (정의/참조/호출) | **LSP (jdtls)** |
+| 아키텍처·도메인 탐색 (의미 기반) | **hedwig-cg-auto search** |
+| 다중 모듈 기능 매핑 | **hedwig-cg-auto search** |
+| 문자열·로그 | **rg** |
+| 비-Java 레포 탐색 | **hedwig-cg-auto** + LSP |
+
+상세: [claude/rules/hedwig-cg.md](claude/rules/hedwig-cg.md)
+
+### 자동 최신화
+
+`pull`/`checkout`/`rebase` 시 DB를 알아서 증분 갱신합니다 (기존 DB 있는 레포 한정, 백그라운드 ~4초).
+
+- **전역 git 훅**: `claude/git-hooks/` (`post-merge`/`post-checkout`/`post-rewrite`) + `git config --global core.hooksPath`
+- **Claude Code SessionStart 훅**: 세션 시작 시 동일 업데이트
+
+임시 비활성화: `HEDWIG_CG_DISABLE_HOOK=1 git pull ...`
+
+### 설치
+
+```bash
+brew install pipx                                          # 파이썬 격리 설치 도구
+pipx install hedwig-cg                                      # 본체
+pipx inject hedwig-cg mcp                                   # MCP 서버 옵셔널 의존성
+ln -sf ~/Claude-Skills/claude/bin/hedwig-cg-auto ~/.local/bin/hedwig-cg-auto
+
+# 자동 최신화 훅 활성화
+git config --global core.hooksPath ~/Claude-Skills/claude/git-hooks
+
+# 공식 Claude 통합 (Skill + 훅) — 전역
+hedwig-cg claude install --scope user
+```
 
 ## 토큰 최적화 (msbaek/dotfiles 패턴 차용)
 
@@ -252,6 +313,15 @@ cp -r ~/Claude-Skills/claude/rules/* ~/.claude/rules/
 claude plugins install superpowers
 
 # 10. MCP 서버 등록 → claude/mcp/README.md 참고
+
+# 11. hedwig-cg 설치 + 래퍼 심볼릭 링크
+pipx install hedwig-cg && pipx inject hedwig-cg mcp
+mkdir -p ~/.local/bin
+ln -sf ~/Claude-Skills/claude/bin/hedwig-cg-auto ~/.local/bin/hedwig-cg-auto
+hedwig-cg claude install --scope user
+
+# 12. git 전역 훅 (pull/checkout 시 자동 인덱스 갱신)
+git config --global core.hooksPath ~/Claude-Skills/claude/git-hooks
 ```
 
 ## 가이드라인

@@ -12,6 +12,14 @@
             "command": "bash ~/.claude/agent-viz/hook-handler.sh session_start"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "db=~/.hedwig-cg/dbs/$(basename $(git rev-parse --show-toplevel 2>/dev/null || pwd))/knowledge.db; [ -f \"$db\" ] && hedwig-cg-auto update >/dev/null 2>&1 &"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -93,7 +101,9 @@
     "superpowers@claude-plugins-official": true,
     "everything-claude-code@everything-claude-code": true,
     "anthropic-agent-skills@anthropic-agent-skills": true,
-    "bo@ktown4u-plugins": true
+    "bo@ktown4u-plugins": true,
+    "jdtls@claude-code-lsps": true,
+    "jdtls-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "everything-claude-code": {
@@ -112,6 +122,12 @@
       "source": {
         "source": "git",
         "url": "https://github.com/ktown4u/ktown4u-plugins.git"
+      }
+    },
+    "claude-code-lsps": {
+      "source": {
+        "source": "github",
+        "repo": "Piebald-AI/claude-code-lsps"
       }
     }
   },

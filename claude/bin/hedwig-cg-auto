@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+#
+# hedwig-cg-auto — Central-DB wrapper around `hedwig-cg`.
+#
+# Routes every query to a single per-repo database kept outside the repo
+# (default: ~/.hedwig-cg/dbs/<repo>/). No per-repo setup needed: missing
+# graphs auto-build from the current git repo root on first query.
+#
+# Works in any git repo. Safe to symlink into $PATH.
+#
+# Environment:
+#   HEDWIG_CG_DB_ROOT     Directory holding per-repo DBs. Default: $HOME/.hedwig-cg/dbs
+#   HEDWIG_CG_AUTO_BUILD  Set to '0' to disable auto-build on missing DB. Default: 1
+#   HEDWIG_CG_BUILD_ARGS  Extra args passed to `hedwig-cg build` (e.g. --max-file-size 200000)
+#
+# Commands:
+#   search QUERY [opts]         Hybrid search (auto-builds if DB missing)
+#   search-vector|search-graph  Single-signal variants (auto-builds)
+#   search-keyword|search-community
+#   stats                       Graph statistics
+#   node ID                     Node details
+#   communities                 List communities
+#   query                       Interactive REPL
+#   export | visualize          Export / visualize graph
+#   build [SRC]                 (Re)build graph for repo (default: current repo root)
+#   rebuild                     Force full rebuild
+#   update                      Incremental build (alias: build --incremental)
+#   clean                       Delete this repo's DB dir
+#   where                       Print DB path and build status
+#   list                        List all repos with DBs under HEDWIG_CG_DB_ROOT
+#   help                        This help
+#
+# Any other subcommand is forwarded to `hedwig-cg` unchanged.
+
+set -euo pipefail
+
+HEDWIG_BIN="${HEDWIG_CG_BIN:-hedwig-cg}"
+DB_ROOT="${HEDWIG_CG_DB_ROOT:-$HOME/.hedwig-cg/dbs}"
+AUTO_BUILD="${HEDWIG_CG_AUTO_BUILD:-1}"
+
+# Resolve repo root — prefer git, fall back to CWD
+if repo_root=$(git rev-parse --show-toplevel 2>/dev/null); then
+    :
+else
+    repo_root=$(pwd)
+fi
+repo_name=$(basename "$repo_root")
+
+db_dir="$DB_ROOT/$repo_name"
+db_path="$db_dir/knowledge.db"
+
+log() { printf '[hedwig-cg-auto] %s\n' "$*" >&2; }
+
+ensure_bin() {
+    if ! command -v "$HEDWIG_BIN" >/dev/null 2>&1; then
+        log "ERROR: '$HEDWIG_BIN' not found in PATH. Install via: pipx install hedwig-cg"
+        exit 127
+    fi
+}
+
+ensure_db() {
+    [ -f "$db_path" ] && return 0
+    if [ "$AUTO_BUILD" != "1" ]; then
+        log "No DB at $db_path (auto-build disabled). Run: hedwig-cg-auto build"
+        exit 1
+    fi
+    log "No DB for '$repo_name' — building from $repo_root (first-time only)"
+    mkdir -p "$db_dir"
+    # shellcheck disable=SC2086
+    "$HEDWIG_BIN" build "$repo_root" -o "$db_dir" ${HEDWIG_CG_BUILD_ARGS:-}
+}
+
+ensure_bin
+
+cmd="${1:-help}"
+shift || true
+
+case "$cmd" in
+    search|search-vector|search-graph|search-keyword|search-community|\
+    stats|node|communities|query|export|visualize)
+        ensure_db
+        exec "$HEDWIG_BIN" "$cmd" "$@" --db "$db_path"
+        ;;
+    build)
+        src="${1:-$repo_root}"
+        mkdir -p "$db_dir"
+        # shellcheck disable=SC2086
+        exec "$HEDWIG_BIN" build "$src" -o "$db_dir" ${HEDWIG_CG_BUILD_ARGS:-}
+        ;;
+    rebuild)
+        mkdir -p "$db_dir"
+        # shellcheck disable=SC2086
+        exec "$HEDWIG_BIN" build "$repo_root" -o "$db_dir" ${HEDWIG_CG_BUILD_ARGS:-}
+        ;;
+    update)
+        mkdir -p "$db_dir"
+        # shellcheck disable=SC2086
+        exec "$HEDWIG_BIN" build "$repo_root" -o "$db_dir" --incremental ${HEDWIG_CG_BUILD_ARGS:-}
+        ;;
+    clean)
+        if [ -d "$db_dir" ]; then
+            rm -rf "$db_dir"
+            log "Removed $db_dir"
+        else
+            log "Nothing to clean at $db_dir"
+        fi
+        ;;
+    where)
+        printf 'repo:        %s\n' "$repo_name"
+        printf 'repo_root:   %s\n' "$repo_root"
+        printf 'db_root:     %s\n' "$DB_ROOT"
+        printf 'db_path:     %s\n' "$db_path"
+        if [ -f "$db_path" ]; then
+            size=$(du -sh "$db_dir" 2>/dev/null | awk '{print $1}')
+            printf 'status:      built (%s)\n' "$size"
+        else
+            printf 'status:      not built\n'
+        fi
+        ;;
+    list)
+        if [ ! -d "$DB_ROOT" ]; then
+            log "No DB root at $DB_ROOT"
+            exit 0
+        fi
+        printf '%-30s %-10s %s\n' REPO SIZE PATH
+        for d in "$DB_ROOT"/*/; do
+            [ -d "$d" ] || continue
+            name=$(basename "$d")
+            size=$(du -sh "$d" 2>/dev/null | awk '{print $1}')
+            printf '%-30s %-10s %s\n' "$name" "$size" "$d"
+        done
+        ;;
+    help|--help|-h|"")
+        sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'
+        ;;
+    *)
+        # Pass-through: add --db only if DB exists and the command tolerates it.
+        if [ -f "$db_path" ]; then
+            exec "$HEDWIG_BIN" "$cmd" "$@" --db "$db_path"
+        else
+            exec "$HEDWIG_BIN" "$cmd" "$@"
+        fi
+        ;;
+esac
