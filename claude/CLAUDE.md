@@ -1,4 +1,8 @@
 @RTK.md
+@rules/_meta-rule-authoring.md
+@rules/behavioral-principles.md
+@rules/korean-output-style.md
+@rules/artifact-discipline.md
 @rules/agents.md
 @rules/session-memory-search.md
 @rules/java-lsp-exploration.md

@@ -89,6 +89,15 @@
             "command": "bash ~/.claude/agent-viz/hook-handler.sh agent_done"
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/md-rule-guard.sh"
+          }
+        ]
       }
     ]
   },
