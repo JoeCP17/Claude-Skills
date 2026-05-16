@@ -4,6 +4,7 @@
 
 ```
 Claude-Skills/
+├── AGENTS.md                         # 이 레포에서 Codex가 읽는 관리 지시사항
 ├── homebrew/
 │   └── Brewfile                      # brew 설치 패키지 목록
 ├── shell/
@@ -23,6 +24,16 @@ Claude-Skills/
 │       │   └── <skill-name>/SKILL.md
 │       └── <custom-skill>/           # 직접 만든 커스텀 스킬
 │           └── SKILL.md
+├── codex/
+│   ├── README.md                     # Codex/OMX 설치 및 복원 가이드
+│   ├── AGENTS.md                     # Codex 전역 지시사항 백업
+│   ├── config.toml                   # Codex 설정 백업
+│   ├── bin/install-oh-my-codex.sh    # Homebrew npm으로 OMX 설치
+│   ├── mcp/
+│   │   └── README.md                 # Codex MCP 복원 명령어
+│   ├── prompts/                      # Codex/OMX 역할 프롬프트
+│   └── skills/
+│       └── <custom-skill>/SKILL.md   # Codex 커스텀 스킬
 └── docs/
     └── GUIDELINE.md                  # 이 파일
 ```
@@ -140,6 +151,28 @@ cp -r ~/.claude/skills/<new-skill> ~/Claude-Skills/claude/skills/
 
 ---
 
+### 7. Codex 설정 변경 시
+
+`codex/config.toml`, `codex/AGENTS.md`, `codex/skills/`를 수정 후 커밋:
+
+```bash
+# 실제 파일 위치
+~/.codex/config.toml       → codex/config.toml
+~/.codex/AGENTS.md         → codex/AGENTS.md
+~/.codex/skills/<skill>/   → codex/skills/<skill>/
+```
+
+**규칙:**
+- `auth.json`, 세션 DB, 로그, 캐시 파일은 절대 커밋하지 않음
+- 전역 설정 복원은 명시적으로 `cp`할 때만 수행
+- `codex/skills/<skill>/SKILL.md`는 Codex skill frontmatter(`name`, `description`)를 포함
+- Claude slash command 문서를 가져올 때는 Claude hook 전용 경로를 그대로 복사하지 말고 Codex가 실행 가능한 workflow로 변환
+- Codex 본체는 `cask "codex"`로 관리하고, `oh-my-codex`는 `codex/bin/install-oh-my-codex.sh`로 관리한다
+- `@openai/codex` npm global 설치는 Homebrew Cask의 `/opt/homebrew/bin/codex`와 충돌할 수 있으므로 Brewfile에 추가하지 않는다
+- MCP 토큰, DB endpoint, Secret ARN은 `codex/config.toml`에 직접 쓰지 않고 `codex/mcp/.env.example` 변수명으로만 남긴다
+
+---
+
 ## 커밋 컨벤션
 
 ```
@@ -152,6 +185,7 @@ type:
   plugin   - 플러그인 추가/변경
   skill    - Claude 스킬 추가/수정
   settings - Claude 설정 변경
+  codex    - Codex 설정/스킬 변경
   docs     - 문서 변경
 ```
 
@@ -163,6 +197,7 @@ mcp: add notion MCP server
 plugin: add superpowers v4.3.1
 skill: add datadog-error-report skill
 settings: allow mcp__github__get_file_contents permission
+codex: add crew workflow skills
 ```
 
 ---
@@ -189,7 +224,14 @@ cp -r ~/Claude-Skills/claude/skills/datadog-error-report ~/.claude/skills/
 # 6. Claude 플러그인 설치
 claude plugins install superpowers
 
-# 7. MCP 서버 등록
+# 7. Codex 설정 복원
+mkdir -p ~/.codex/skills
+cp ~/Claude-Skills/codex/AGENTS.md ~/.codex/AGENTS.md
+cp ~/Claude-Skills/codex/config.toml ~/.codex/config.toml
+cp -r ~/Claude-Skills/codex/skills/* ~/.codex/skills/
+
+# 8. MCP 서버 등록
 # claude/mcp/README.md의 복원 명령어 참고
+# codex/mcp/README.md의 복원 명령어 참고
 # 환경변수는 claude/mcp/.env.example을 복사해 실제 값 입력 후 사용
 ```

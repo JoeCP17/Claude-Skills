@@ -1,0 +1,7 @@
+interface:
+  display_name: "brainstorm"
+  short_description: "Design ideas into approved implementation specs"
+  default_prompt: "Use $brainstorm to explore this idea, compare approaches, and write an approved spec before coding."
+
+policy:
+  allow_implicit_invocation: false

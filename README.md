@@ -6,6 +6,7 @@ Claude Code를 효과적으로 사용하기 위한 개인 설정, 스킬, 환경
 
 ```
 Claude-Skills/
+├── AGENTS.md                         # 이 레포에서 Codex가 읽는 관리 지시사항
 ├── homebrew/
 │   └── Brewfile                      # brew 설치 패키지 목록
 ├── shell/
@@ -52,6 +53,21 @@ Claude-Skills/
 │       ├── pr/                       # rebase + PR 생성
 │       ├── obsidian-vault/           # Obsidian/마크다운 작업, markdown-oxide LSP 가이드
 │       └── code-search-efficient/    # ast-grep/fd/rg/LSP 도구 선택 결정 트리
+├── codex/
+│   ├── README.md                     # Codex/OMX 설치 및 복원 가이드
+│   ├── AGENTS.md                     # 글로벌 Codex 지시사항 백업
+│   ├── config.toml                   # ~/.codex/config.toml 백업
+│   ├── bin/install-oh-my-codex.sh    # Homebrew npm으로 OMX 설치
+│   ├── mcp/README.md                 # Codex MCP 복원 명령어
+│   ├── prompts/                      # Codex/OMX 역할 프롬프트
+│   └── skills/                       # Codex 커스텀 스킬
+│       ├── crew-plan/                # 계획 + 비판 + seed 저장
+│       ├── crew-work/                # 구현 + 검증 + 리뷰 루프
+│       ├── crew-review/              # 코드 리뷰 모드
+│       ├── crew-flow/                # plan → work → review 통합 플로우
+│       ├── crew-status/              # .codex/crew 상태 요약
+│       ├── crew-cleanup/             # .codex/crew 상태 정리
+│       └── octo-patch/               # Claude Octo 플러그인 타임아웃 패치
 └── docs/
     └── GUIDELINE.md                  # 항목 추가 가이드라인
 ```
@@ -241,6 +257,8 @@ Brewfile에 포함되어 새 PC에서 자동 설치됩니다.
 | notion | Notion 연동 |
 | datadog-mcp | Datadog 모니터링 조회 |
 
+Codex MCP 복원 명령어는 [codex/mcp/README.md](codex/mcp/README.md)에 별도 정리했습니다.
+
 ## 설치된 플러그인
 
 | 플러그인 | 설명 |
@@ -261,6 +279,24 @@ Brewfile에 포함되어 새 PC에서 자동 설치됩니다.
 | obsidian-vault | Obsidian/마크다운 작업, markdown-oxide LSP 우선, 토큰 절약 패턴 |
 | code-search-efficient | 코드 탐색 시 ast-grep/fd/rg/LSP 도구 선택 결정 트리 |
 
+## Codex 설정
+
+`codex/` 디렉터리는 Claude 설정과 같은 목적의 Codex 백업입니다.
+
+| 항목 | 설명 |
+|------|------|
+| `codex/README.md` | Codex CLI와 oh-my-codex(OMX) 설치/복원 가이드 |
+| `codex/AGENTS.md` | `~/.codex/AGENTS.md`로 복원하는 전역 Codex 지시사항 |
+| `codex/config.toml` | 모델, reasoning effort, trusted project 설정 백업 |
+| `codex/bin/install-oh-my-codex.sh` | Homebrew Node/npm으로 `oh-my-codex`만 전역 설치 |
+| `codex/prompts/` | `agent-workbench`에서 가져온 Codex/OMX 역할 프롬프트 |
+| `codex/skills/crew-*` | 제공받은 `crew-*.md` 명령 문서를 Codex skill 형식으로 변환 |
+| `codex/skills/java-spring-workflow` | Java/Spring 구현·리뷰 규칙 기반 workflow |
+| `codex/skills/jira-kickoff`, `mysql-read`, `pull-request` | Jira, DB read-only 조회, PR 자동화 workflow |
+| `codex/skills/octo-patch` | 제공받은 `octo-patch.md`를 Codex skill 형식으로 변환 |
+
+현재 로컬 `codex`는 Homebrew Cask(`/opt/homebrew/Caskroom/codex/0.130.0`)로 설치되어 있습니다. 따라서 `npm install -g @openai/codex oh-my-codex`는 `/opt/homebrew/bin/codex`와 충돌할 수 있으니 새 PC에서도 `brew install --cask codex`를 우선 사용하고, OMX는 `codex/bin/install-oh-my-codex.sh`로 `oh-my-codex`만 설치합니다.
+
 ## 커스텀 서브 에이전트
 
 `claude/agents/`에 정의된 5개 에이전트는 `claude/rules/agents.md`의 결정 트리를 통해 **자동 위임**됩니다.
@@ -279,7 +315,7 @@ Brewfile에 포함되어 새 PC에서 자동 설치됩니다.
 # 1. 레포 클론
 git clone git@github.com:JoeCP17/Claude-Skills.git ~/Claude-Skills
 
-# 2. brew 패키지 일괄 설치 (rtk 포함)
+# 2. brew 패키지 일괄 설치 (rtk, codex 포함)
 brew bundle install --file=~/Claude-Skills/homebrew/Brewfile
 
 # 3. Claude Code 네이티브 설치 (Homebrew가 아닌 공식 설치 방식)
@@ -312,15 +348,29 @@ cp -r ~/Claude-Skills/claude/rules/* ~/.claude/rules/
 # 9. 플러그인 설치
 claude plugins install superpowers
 
-# 10. MCP 서버 등록 → claude/mcp/README.md 참고
+# 10. Codex 설정 복원
+mkdir -p ~/.codex/skills
+cp ~/Claude-Skills/codex/AGENTS.md ~/.codex/AGENTS.md
+cp ~/Claude-Skills/codex/config.toml ~/.codex/config.toml
+cp -r ~/Claude-Skills/codex/skills/* ~/.codex/skills/
+cp -r ~/Claude-Skills/codex/prompts ~/.codex/prompts
 
-# 11. hedwig-cg 설치 + 래퍼 심볼릭 링크
+# 11. OMX 설치 + 초기화
+~/Claude-Skills/codex/bin/install-oh-my-codex.sh
+omx setup --scope user --merge-agents --mcp none
+omx doctor
+
+# 12. MCP 서버 등록
+# Claude → claude/mcp/README.md 참고
+# Codex  → codex/mcp/README.md 참고
+
+# 13. hedwig-cg 설치 + 래퍼 심볼릭 링크
 pipx install hedwig-cg && pipx inject hedwig-cg mcp
 mkdir -p ~/.local/bin
 ln -sf ~/Claude-Skills/claude/bin/hedwig-cg-auto ~/.local/bin/hedwig-cg-auto
 hedwig-cg claude install --scope user
 
-# 12. git 전역 훅 (pull/checkout 시 자동 인덱스 갱신)
+# 14. git 전역 훅 (pull/checkout 시 자동 인덱스 갱신)
 git config --global core.hooksPath ~/Claude-Skills/claude/git-hooks
 ```
 

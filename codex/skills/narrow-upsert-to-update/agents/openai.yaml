@@ -1,0 +1,7 @@
+interface:
+  display_name: "narrow-upsert-to-update"
+  short_description: "Split one shared ActionSet upsert into a narrow update"
+  default_prompt: "Use $narrow-upsert-to-update to inspect one shared ActionSet upsert path, trace which values truly change, check coverage first, and split that single actionId into a dedicated update only if it is safe."
+
+policy:
+  allow_implicit_invocation: false

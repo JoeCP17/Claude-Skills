@@ -1,0 +1,4 @@
+interface:
+  display_name: "md-to-pdf"
+  short_description: "Convert Markdown files to PDF"
+  default_prompt: "Use $md-to-pdf to convert a Markdown file to PDF."

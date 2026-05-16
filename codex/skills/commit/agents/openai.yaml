@@ -1,0 +1,4 @@
+interface:
+  display_name: 'commit'
+  short_description: 'Generate intent-focused Git commits'
+  default_prompt: 'Use $commit to analyze the current changes, write a Korean commit message, and run git commit.'

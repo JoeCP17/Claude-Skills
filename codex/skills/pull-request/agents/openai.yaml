@@ -1,0 +1,7 @@
+interface:
+  display_name: 'pull-request'
+  short_description: 'Draft, confirm, push, and create intent-focused GitHub PRs'
+  default_prompt: 'Use $pull-request to draft an intent-focused PR against main, confirm the title and a sectioned PR body with English `##` headings and concise bullets with me, push the current branch if needed, and create the PR with gh.'
+
+policy:
+  allow_implicit_invocation: false

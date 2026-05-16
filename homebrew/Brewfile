@@ -30,6 +30,9 @@ brew "jdtls"           # Eclipse JDT Language Server — Claude Code Java LSP �
 brew "golang-migrate"
 brew "golangci-lint"
 
+# Rust
+brew "rust"            # cargo/rustc — oh-my-codex Explore Harness fallback
+
 # 네트워크/유틸
 brew "wget"
 brew "httpie"          # HTTP 클라이언트
@@ -62,6 +65,7 @@ brew "ast-grep"        # AST 기반 구문 인식 검색 (sg) — 정규식보�
 # ---------------------------------------------------------------------------
 
 cask "ngrok"           # 로컬 서버 터널링
+cask "codex"           # OpenAI Codex CLI (npm @openai/codex와 bin 충돌 주의)
 cask "openlens"        # Kubernetes IDE
 cask "discord"         # 커뮤니케이션
 cask "mysqlworkbench"  # MySQL GUI

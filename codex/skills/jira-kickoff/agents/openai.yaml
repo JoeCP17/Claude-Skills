@@ -1,0 +1,7 @@
+interface:
+  display_name: 'jira-kickoff'
+  short_description: 'Confirm or create a Jira issue, then create a safe working branch from main'
+  default_prompt: 'Use $jira-kickoff to confirm or create the Jira issue, validate the target project if needed, propose and confirm the branch name, update local main safely, and create the working branch before implementation starts.'
+
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Java Spring Workflow"
+  short_description: "Implement Java/Spring changes with self-review"
+  default_prompt: "Use $java-spring-workflow to implement an approved Java/Spring plan, run a Java/Spring self-review loop, fix rule violations, and verify the result."
+
+policy:
+  allow_implicit_invocation: false

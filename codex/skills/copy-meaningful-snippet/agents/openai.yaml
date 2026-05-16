@@ -1,0 +1,4 @@
+interface:
+  display_name: "Copy Meaningful Snippet"
+  short_description: "Copy paste-ready code or query snippets"
+  default_prompt: "Use $copy-meaningful-snippet to copy only the final paste-ready artifact from this task to my clipboard."
