@@ -167,6 +167,7 @@ cp -r ~/.claude/skills/<new-skill> ~/LLM-Dot-files/claude/skills/
 - 전역 설정 복원은 명시적으로 `cp`할 때만 수행
 - `codex/skills/<skill>/SKILL.md`는 Codex skill frontmatter(`name`, `description`)를 포함
 - Claude slash command 문서를 가져올 때는 Claude hook 전용 경로를 그대로 복사하지 말고 Codex가 실행 가능한 workflow로 변환
+- 세션 저장용 Codex 스킬은 `.codex/session-notes/`와 `.omx/notepad.md`처럼 프로젝트 로컬에 남는 경로를 우선 사용한다
 - Codex 본체는 `cask "codex"`로 관리하고, `oh-my-codex`는 `codex/bin/install-oh-my-codex.sh`로 관리한다
 - `@openai/codex` npm global 설치는 Homebrew Cask의 `/opt/homebrew/bin/codex`와 충돌할 수 있으므로 Brewfile에 추가하지 않는다
 - MCP 토큰, DB endpoint, Secret ARN은 `codex/config.toml`에 직접 쓰지 않고 `codex/mcp/.env.example` 변수명으로만 남긴다

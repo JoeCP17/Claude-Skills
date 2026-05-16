@@ -32,6 +32,10 @@ cp -r ~/LLM-Dot-files/codex/skills/* ~/.codex/skills/
 cp -r ~/LLM-Dot-files/codex/prompts ~/.codex/prompts
 ```
 
+## 세션 저장
+
+Codex 대화 기록은 자동 저장되지만, Claude `/wrap`처럼 다음 세션에서 바로 읽기 쉬운 작업 요약이 필요하면 `wrap` 스킬을 사용한다. 이 스킬은 현재 세션의 완료 작업, 결정, 검증 결과, 다음 작업을 프로젝트 로컬 `.codex/session-notes/`에 저장하고, OMX 프로젝트에서는 `.omx/notepad.md`에도 짧은 링크를 남긴다.
+
 MCP 환경변수는 [mcp/.env.example](mcp/.env.example)을 참고해 개인 shell profile이나 비공개 env 파일에 설정한다.
 
 ## OMX 초기화
