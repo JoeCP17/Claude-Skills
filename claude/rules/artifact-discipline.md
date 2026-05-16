@@ -103,7 +103,7 @@ Plan을 **체크박스 단위**로 분해. 진행하면서 즉시 체크. 다음
 ## 저장 위치 컨벤션
 
 - 개인 작업 — `~/Documents/projects/<project>/plans/<YYYYMMDD>-<slug>.md`
-- 회사 작업 — 회사 Notion / Confluence (claude-skills 외부)
+- 회사 작업 — 회사 Notion / Confluence (llm-dot-files 외부)
 - 프로젝트 내장 — `<repo>/.plans/<slug>/{plan,checklist,context-notes}.md` (`.gitignore` 추가 권장 — 개인 노트성이면)
 
 ---

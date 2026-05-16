@@ -20,14 +20,14 @@
 
 ```bash
 # 1. 비슷한 룰이 있나?
-ls /Users/ueibin/Desktop/Claude-Skills/claude/rules/
-grep -l "<핵심 키워드>" /Users/ueibin/Desktop/Claude-Skills/claude/rules/*.md
+ls /Users/ueibin/Desktop/LLM-Dot-files/claude/rules/
+grep -l "<핵심 키워드>" /Users/ueibin/Desktop/LLM-Dot-files/claude/rules/*.md
 
 # 2. 글로벌에도 있나?
 ls /Users/ueibin/.claude/rules/
 
 # 3. agents/ skills/ 에 같은 주제 있나?
-grep -rli "<핵심 키워드>" /Users/ueibin/Desktop/Claude-Skills/claude/{agents,skills}
+grep -rli "<핵심 키워드>" /Users/ueibin/Desktop/LLM-Dot-files/claude/{agents,skills}
 ```
 
 판단 트리.
@@ -126,20 +126,20 @@ grep -rli "<핵심 키워드>" /Users/ueibin/Desktop/Claude-Skills/claude/{agent
 
 ## 5. 글로벌 sync 절차
 
-룰을 `Claude-Skills/claude/rules/` 에 추가/수정한 뒤 — 글로벌 (`~/.claude/`) 에도 반영해야 활성화됩니다.
+룰을 `LLM-Dot-files/claude/rules/` 에 추가/수정한 뒤 — 글로벌 (`~/.claude/`) 에도 반영해야 활성화됩니다.
 
 ```bash
 # 단일 파일 sync
-cp /Users/ueibin/Desktop/Claude-Skills/claude/rules/<file>.md \
+cp /Users/ueibin/Desktop/LLM-Dot-files/claude/rules/<file>.md \
    /Users/ueibin/.claude/rules/<file>.md
 
 # 전체 rules sync (덮어쓰기)
 rsync -av --delete \
-  /Users/ueibin/Desktop/Claude-Skills/claude/rules/ \
+  /Users/ueibin/Desktop/LLM-Dot-files/claude/rules/ \
   /Users/ueibin/.claude/rules/
 
 # CLAUDE.md import 라인도 동기화
-cp /Users/ueibin/Desktop/Claude-Skills/claude/CLAUDE.md \
+cp /Users/ueibin/Desktop/LLM-Dot-files/claude/CLAUDE.md \
    /Users/ueibin/.claude/CLAUDE.md
 ```
 
@@ -153,11 +153,11 @@ cp /Users/ueibin/Desktop/Claude-Skills/claude/CLAUDE.md \
 
 - [ ] 위 1번 — 중복 확인 (grep, ls)
 - [ ] 위 2번 — 골격에 맞춰 파일 작성
-- [ ] `Claude-Skills/claude/CLAUDE.md` 에 `@rules/<file>.md` 추가 (글로벌 활성화 의도일 때)
+- [ ] `LLM-Dot-files/claude/CLAUDE.md` 에 `@rules/<file>.md` 추가 (글로벌 활성화 의도일 때)
 - [ ] 위 5번 — `~/.claude/` 로 sync
 - [ ] `claude/bin/rule-loop.sh <file>` 실행 — 5단계 통합 검증 + 자동 fix 루프 통과
 - [ ] (선택) `claude/tests/run-tests.sh` — 검증기 회귀 점검
-- [ ] `Claude-Skills` 에 commit — 메시지 prefix `rule:` (e.g. `rule: add korean-output-style`)
+- [ ] `LLM-Dot-files` 에 commit — 메시지 prefix `rule:` (e.g. `rule: add korean-output-style`)
 
 ## 7. 자동화 도구
 
@@ -174,11 +174,11 @@ cp /Users/ueibin/Desktop/Claude-Skills/claude/CLAUDE.md \
 
 ```bash
 # 신규 룰 작성
-vim ~/Desktop/Claude-Skills/claude/rules/my-new-rule.md
+vim ~/Desktop/LLM-Dot-files/claude/rules/my-new-rule.md
 
 # 통합 검증 + 자동 수정 (가장 흔한 진입점)
-bash ~/Desktop/Claude-Skills/claude/bin/rule-loop.sh \
-  ~/Desktop/Claude-Skills/claude/rules/my-new-rule.md
+bash ~/Desktop/LLM-Dot-files/claude/bin/rule-loop.sh \
+  ~/Desktop/LLM-Dot-files/claude/rules/my-new-rule.md
 
 # PASS면 commit, FAIL이면 stderr 안내 따라 수동 수정
 ```
@@ -200,7 +200,7 @@ bash ~/Desktop/Claude-Skills/claude/bin/rule-loop.sh \
 SANDBOX=/tmp/rule-sandbox-$$
 mkdir -p "$SANDBOX/rules"
 cp my-new-rule.md "$SANDBOX/rules/"
-bash ~/Desktop/Claude-Skills/claude/bin/rule-loop.sh "$SANDBOX/rules/my-new-rule.md"
+bash ~/Desktop/LLM-Dot-files/claude/bin/rule-loop.sh "$SANDBOX/rules/my-new-rule.md"
 diff -u my-new-rule.md "$SANDBOX/rules/my-new-rule.md"   # 변경 확인
 ```
 
@@ -223,5 +223,5 @@ diff -u my-new-rule.md "$SANDBOX/rules/my-new-rule.md"   # 변경 확인
 - ❌ `> Purpose` 인용구 누락 → 다른 세션이 파일 첫 줄만 보고 목적 파악 불가
 - ❌ `## Tradeoff` 섹션 빼고 "무조건 따라라" 식 톤 → 룰 충돌 시 사용자가 판단 못 함
 - ❌ 안티패턴 섹션 없이 좋은 예시만 나열 → "안 되는 케이스"가 더 학습 효과 큼
-- ❌ `Claude-Skills` 에만 추가하고 `~/.claude/` sync 누락 → 룰이 실제로 활성화 안 됨
+- ❌ `LLM-Dot-files` 에만 추가하고 `~/.claude/` sync 누락 → 룰이 실제로 활성화 안 됨
 - ❌ 본 메타 룰을 무시하고 자기 스타일로 새 룰 작성 → 다음 사용자가 매번 재학습

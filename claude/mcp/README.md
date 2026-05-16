@@ -23,7 +23,7 @@
 
 ### 1. 환경변수 설정
 ```bash
-cp ~/Claude-Skills/claude/mcp/.env.example ~/Claude-Skills/claude/mcp/.env
+cp ~/LLM-Dot-files/claude/mcp/.env.example ~/LLM-Dot-files/claude/mcp/.env
 # .env 파일에 실제 값 입력
 ```
 

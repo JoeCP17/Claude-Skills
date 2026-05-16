@@ -12,7 +12,6 @@ FX="$TESTS_DIR/fixtures/rules"
 CHECKER=""
 for c in \
   "$TESTS_DIR/../bin/check-md-rule.sh" \
-  "$HOME/Desktop/Claude-Skills/claude/bin/check-md-rule.sh" \
   "$HOME/.claude/bin/check-md-rule.sh"
 do
   if [ -x "$c" ]; then CHECKER="$c"; break; fi

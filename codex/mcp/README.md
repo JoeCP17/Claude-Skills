@@ -5,7 +5,7 @@
 ## 환경변수
 
 ```bash
-cp ~/Claude-Skills/codex/mcp/.env.example ~/Claude-Skills/codex/mcp/.env
+cp ~/LLM-Dot-files/codex/mcp/.env.example ~/LLM-Dot-files/codex/mcp/.env
 ```
 
 `.env`에는 실제 값을 넣되 커밋하지 않는다.

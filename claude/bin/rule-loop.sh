@@ -10,6 +10,7 @@
 # Exit: 최종 PASS면 0, 마지막에도 FAIL이면 1.
 
 set -uo pipefail
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 if [ "$#" -lt 1 ]; then
   echo "Usage: $0 <path/to/rule.md>" >&2
@@ -28,8 +29,7 @@ fi
 find_bin() {
   local name="$1"
   for c in \
-    "$(dirname "$0")/$name" \
-    "$HOME/Desktop/Claude-Skills/claude/bin/$name" \
+    "$SCRIPT_DIR/$name" \
     "$HOME/.claude/bin/$name"
   do
     [ -x "$c" ] && { echo "$c"; return; }

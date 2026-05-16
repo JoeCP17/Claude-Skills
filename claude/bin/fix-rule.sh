@@ -5,6 +5,8 @@
 
 set -uo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 if [ "$#" -lt 1 ]; then
   echo "Usage: $0 <path/to/rule.md>" >&2
   exit 2
@@ -12,8 +14,7 @@ fi
 
 HELPER=""
 for c in \
-  "$(dirname "$0")/_fix-rule.py" \
-  "$HOME/Desktop/Claude-Skills/claude/bin/_fix-rule.py" \
+  "$SCRIPT_DIR/_fix-rule.py" \
   "$HOME/.claude/bin/_fix-rule.py"
 do
   [ -f "$c" ] && HELPER="$c" && break

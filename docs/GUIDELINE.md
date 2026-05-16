@@ -1,9 +1,9 @@
-# Claude-Skills 관리 가이드라인
+# LLM-Dot-files 관리 가이드라인
 
 ## 디렉토리 구조
 
 ```
-Claude-Skills/
+LLM-Dot-files/
 ├── AGENTS.md                         # 이 레포에서 Codex가 읽는 관리 지시사항
 ├── homebrew/
 │   └── Brewfile                      # brew 설치 패키지 목록
@@ -52,7 +52,7 @@ brew "패키지명"      # CLI 도구
 cask "앱이름"        # GUI 앱
 
 # 전체 복원 방법 (새 PC 세팅 시)
-brew bundle install --file=~/Claude-Skills/homebrew/Brewfile
+brew bundle install --file=~/LLM-Dot-files/homebrew/Brewfile
 ```
 
 **규칙:**
@@ -127,9 +127,9 @@ claude plugins install <plugin-name>
 
 ```bash
 # 실제 스킬 파일 위치: ~/.claude/skills/<skill-name>/SKILL.md
-# Claude-Skills 레포에도 동일하게 복사
+# LLM-Dot-files 레포에도 동일하게 복사
 
-cp -r ~/.claude/skills/<new-skill> ~/Claude-Skills/claude/skills/
+cp -r ~/.claude/skills/<new-skill> ~/LLM-Dot-files/claude/skills/
 ```
 
 **규칙:**
@@ -206,29 +206,29 @@ codex: add crew workflow skills
 
 ```bash
 # 1. 레포 클론
-git clone https://github.com/JoeCP17/Claude-Skills.git ~/Claude-Skills
+git clone https://github.com/JoeCP17/LLM-Dot-files.git ~/LLM-Dot-files
 
 # 2. brew 패키지 일괄 설치
-brew bundle install --file=~/Claude-Skills/homebrew/Brewfile
+brew bundle install --file=~/LLM-Dot-files/homebrew/Brewfile
 
 # 3. zshrc 적용
-cat ~/Claude-Skills/shell/.zshrc >> ~/.zshrc && source ~/.zshrc
+cat ~/LLM-Dot-files/shell/.zshrc >> ~/.zshrc && source ~/.zshrc
 
 # 4. Claude 설정 복원
-cp ~/Claude-Skills/claude/settings/settings.json ~/.claude/settings.json
-cp ~/Claude-Skills/claude/settings/settings.local.json ~/.claude/settings.local.json
+cp ~/LLM-Dot-files/claude/settings/settings.json ~/.claude/settings.json
+cp ~/LLM-Dot-files/claude/settings/settings.local.json ~/.claude/settings.local.json
 
 # 5. Claude 커스텀 스킬 복원 (superpowers 제외 - 플러그인 설치로 자동 제공)
-cp -r ~/Claude-Skills/claude/skills/datadog-error-report ~/.claude/skills/
+cp -r ~/LLM-Dot-files/claude/skills/datadog-error-report ~/.claude/skills/
 
 # 6. Claude 플러그인 설치
 claude plugins install superpowers
 
 # 7. Codex 설정 복원
 mkdir -p ~/.codex/skills
-cp ~/Claude-Skills/codex/AGENTS.md ~/.codex/AGENTS.md
-cp ~/Claude-Skills/codex/config.toml ~/.codex/config.toml
-cp -r ~/Claude-Skills/codex/skills/* ~/.codex/skills/
+cp ~/LLM-Dot-files/codex/AGENTS.md ~/.codex/AGENTS.md
+cp ~/LLM-Dot-files/codex/config.toml ~/.codex/config.toml
+cp -r ~/LLM-Dot-files/codex/skills/* ~/.codex/skills/
 
 # 8. MCP 서버 등록
 # claude/mcp/README.md의 복원 명령어 참고

@@ -10,7 +10,7 @@
 
 ```bash
 which hedwig-cg          # pipx 로 설치된 원본 바이너리
-which hedwig-cg-auto     # wrapper (Claude-Skills 에서 symlink)
+which hedwig-cg-auto     # wrapper (LLM-Dot-files 에서 symlink)
 hedwig-cg --version      # >= 0.13.1
 hedwig-cg-auto where     # 현재 레포의 DB 위치 + 상태
 hedwig-cg-auto list      # 인덱싱된 레포 전체
@@ -19,7 +19,7 @@ hedwig-cg-auto list      # 인덱싱된 레포 전체
 설치 안 돼 있으면:
 ```bash
 brew install pipx && pipx install hedwig-cg && pipx inject hedwig-cg mcp
-# wrapper는 Claude-Skills/claude/bin/hedwig-cg-auto 를 $PATH 에 심볼릭 링크
+# wrapper는 LLM-Dot-files/claude/bin/hedwig-cg-auto 를 $PATH 에 심볼릭 링크
 ```
 
 ## When to Use (탐색 의사결정 트리)
@@ -97,7 +97,7 @@ hedwig-cg-auto rebuild           # 풀 재빌드
 
 ### 5-1. 자동 최신화 (pull/checkout/rebase 시)
 
-**git 전역 훅** (`core.hooksPath` → `Claude-Skills/claude/git-hooks`) 이 설치되어 있어 `git pull`, `git checkout <branch>`, `git rebase` 시 **기존 DB가 있는 레포에 한해** 백그라운드로 `hedwig-cg-auto update` 실행됩니다 (~4초, git 커맨드 지연 없음).
+**git 전역 훅** (`core.hooksPath` → `LLM-Dot-files/claude/git-hooks`) 이 설치되어 있어 `git pull`, `git checkout <branch>`, `git rebase` 시 **기존 DB가 있는 레포에 한해** 백그라운드로 `hedwig-cg-auto update` 실행됩니다 (~4초, git 커맨드 지연 없음).
 
 **Claude Code SessionStart 훅** 도 등록되어 세션 시작 시 동일 업데이트 시도합니다.
 
@@ -146,5 +146,5 @@ hedwig-cg-auto update   # 증분 빌드
 
 - 공식 스킬: `~/.claude/skills/hedwig-cg/SKILL.md` (상세 사용법)
 - 공식 레포: https://github.com/hedwig-ai/hedwig-code-graph
-- Wrapper 소스: `Claude-Skills/claude/bin/hedwig-cg-auto`
+- Wrapper 소스: `LLM-Dot-files/claude/bin/hedwig-cg-auto`
 - 관련 룰: `java-lsp-exploration.md`, `token-optimization.md`

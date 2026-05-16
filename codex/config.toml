@@ -14,7 +14,7 @@ developer_instructions = "You have oh-my-codex installed. AGENTS.md is the orche
 [projects."/Users/ueibin"]
 trust_level = "trusted"
 
-[projects."/Users/ueibin/Desktop/Claude-Skills"]
+[projects."/Users/ueibin/Desktop/LLM-Dot-files"]
 trust_level = "trusted"
 
 [profiles.fast]

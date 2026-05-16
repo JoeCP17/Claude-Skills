@@ -6,6 +6,8 @@
 # Reference: claude/bin/check-md-rule.sh, claude/rules/_meta-rule-authoring.md
 
 set -uo pipefail
+HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_CLAUDE_DIR="$(cd "$HOOK_DIR/.." && pwd)"
 
 # stdin JSON 읽기
 payload=$(cat 2>/dev/null || echo "")
@@ -39,12 +41,12 @@ case "$file_path" in
   *) exit 0 ;;
 esac
 
-# 검증 스크립트 위치 (Claude-Skills 우선, 글로벌 fallback)
+# 검증 스크립트 위치 (현재 레포 우선, 글로벌 fallback)
 CHECKER=""
 for candidate in \
-  "$HOME/Desktop/Claude-Skills/claude/bin/check-md-rule.sh" \
+  "$REPO_CLAUDE_DIR/bin/check-md-rule.sh" \
   "$HOME/.claude/bin/check-md-rule.sh" \
-  "$(dirname "$0")/../bin/check-md-rule.sh"
+  "$HOOK_DIR/../bin/check-md-rule.sh"
 do
   if [ -x "$candidate" ]; then
     CHECKER="$candidate"

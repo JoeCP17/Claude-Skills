@@ -7,6 +7,8 @@
 
 set -uo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 # 결과 카운트
 warn_total=0
 file_total=0
@@ -90,8 +92,7 @@ check_korean_colon() {
   local file="$1"
   local helper
   for candidate in \
-    "$(dirname "$0")/_check-korean-colon.py" \
-    "$HOME/Desktop/Claude-Skills/claude/bin/_check-korean-colon.py" \
+    "$SCRIPT_DIR/_check-korean-colon.py" \
     "$HOME/.claude/bin/_check-korean-colon.py"
   do
     if [ -f "$candidate" ]; then

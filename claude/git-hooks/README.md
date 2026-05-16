@@ -5,7 +5,7 @@
 ## 활성화
 
 ```bash
-git config --global core.hooksPath ~/Documents/GitHub/Claude-Skills/claude/git-hooks
+git config --global core.hooksPath ~/Documents/GitHub/LLM-Dot-files/claude/git-hooks
 ```
 
 ## 동작

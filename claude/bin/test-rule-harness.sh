@@ -5,13 +5,15 @@
 # Exit: 모든 단계 PASS면 0, 하나라도 FAIL이면 1
 # Stages:
 #   1. 정적 검증 (check-md-rule.sh, 경고 0건 기대)
-#   2. 글로벌 sync 상태 (Claude-Skills ↔ ~/.claude/)
+#   2. 글로벌 sync 상태 (LLM-Dot-files ↔ ~/.claude/)
 #   3. CLAUDE.md @import 라인 존재
 #   4. Hook end-to-end 시뮬레이션 (md-rule-guard.sh)
 #   5. 종합 리포트
 # Reference: claude/bin/check-md-rule.sh, claude/hooks/md-rule-guard.sh
 
 set -uo pipefail
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_CLAUDE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 if [ "$#" -lt 1 ]; then
   echo "Usage: $0 <path/to/rule.md>" >&2
@@ -42,8 +44,7 @@ ABS_TARGET=$(cd "$(dirname "$TARGET")" && pwd)/$(basename "$TARGET")
 find_bin() {
   local name="$1"
   for c in \
-    "$(dirname "$0")/$name" \
-    "$HOME/Desktop/Claude-Skills/claude/bin/$name" \
+    "$SCRIPT_DIR/$name" \
     "$HOME/.claude/bin/$name"
   do
     [ -x "$c" ] && { echo "$c"; return; }
@@ -54,8 +55,7 @@ find_bin() {
 find_hook() {
   local name="$1"
   for c in \
-    "$(dirname "$0")/../hooks/$name" \
-    "$HOME/Desktop/Claude-Skills/claude/hooks/$name" \
+    "$REPO_CLAUDE_DIR/hooks/$name" \
     "$HOME/.claude/hooks/$name"
   do
     [ -x "$c" ] && { echo "$c"; return; }
@@ -107,13 +107,13 @@ echo ""
 # -----------------------------
 echo "${C_BLU}--- Stage 2. 글로벌 sync 상태 ---${C_RST}"
 case "$ABS_TARGET" in
-  *"/Claude-Skills/claude/"*)
-    rel="${ABS_TARGET#*/Claude-Skills/claude/}"
+  "$REPO_CLAUDE_DIR"/*)
+    rel="${ABS_TARGET#"$REPO_CLAUDE_DIR/"}"
     global_path="$HOME/.claude/$rel"
     ;;
   *"/.claude/"*)
     rel="${ABS_TARGET#*/.claude/}"
-    global_path="$HOME/Desktop/Claude-Skills/claude/$rel"
+    global_path="$REPO_CLAUDE_DIR/$rel"
     ;;
   *)
     rel=""
@@ -122,7 +122,7 @@ case "$ABS_TARGET" in
 esac
 
 if [ -z "$global_path" ]; then
-  report INFO "stage2-sync" "Claude-Skills/~/.claude 영역 밖 — sync 점검 생략"
+  report INFO "stage2-sync" "repo/~/.claude 영역 밖 — sync 점검 생략"
 elif [ ! -f "$global_path" ]; then
   report FAIL "stage2-sync" "미러 파일 없음: $global_path (sync 누락)"
 elif cmp -s "$ABS_TARGET" "$global_path"; then

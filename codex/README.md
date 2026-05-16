@@ -13,23 +13,23 @@ brew install --cask codex
 OMX는 npm global package로 설치한다. 먼저 Brewfile로 Codex CLI와 Homebrew Node/npm을 복원한다.
 
 ```bash
-brew bundle install --file=~/Claude-Skills/homebrew/Brewfile
+brew bundle install --file=~/LLM-Dot-files/homebrew/Brewfile
 ```
 
 현재 환경처럼 `/opt/homebrew/bin/codex`가 이미 Homebrew Cask 설치본이면 `npm install -g @openai/codex oh-my-codex`를 그대로 실행하지 않는다. npm이 `codex` 바이너리를 덮어쓰려다 `EEXIST`로 실패할 수 있다. 수동 설치가 필요하면 `oh-my-codex`만 설치한다.
 
 ```bash
-~/Claude-Skills/codex/bin/install-oh-my-codex.sh
+~/LLM-Dot-files/codex/bin/install-oh-my-codex.sh
 ```
 
 ## 복원
 
 ```bash
 mkdir -p ~/.codex/skills
-cp ~/Claude-Skills/codex/AGENTS.md ~/.codex/AGENTS.md
-cp ~/Claude-Skills/codex/config.toml ~/.codex/config.toml
-cp -r ~/Claude-Skills/codex/skills/* ~/.codex/skills/
-cp -r ~/Claude-Skills/codex/prompts ~/.codex/prompts
+cp ~/LLM-Dot-files/codex/AGENTS.md ~/.codex/AGENTS.md
+cp ~/LLM-Dot-files/codex/config.toml ~/.codex/config.toml
+cp -r ~/LLM-Dot-files/codex/skills/* ~/.codex/skills/
+cp -r ~/LLM-Dot-files/codex/prompts ~/.codex/prompts
 ```
 
 MCP 환경변수는 [mcp/.env.example](mcp/.env.example)을 참고해 개인 shell profile이나 비공개 env 파일에 설정한다.

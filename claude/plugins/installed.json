@@ -1,0 +1,94 @@
+[
+  {
+    "id": "everything-claude-code@everything-claude-code",
+    "version": "1.10.0",
+    "scope": "project",
+    "enabled": true,
+    "installPath": "/Users/ueibin/.claude/plugins/cache/everything-claude-code/everything-claude-code/1.10.0",
+    "installedAt": "2026-04-19T12:26:30.940Z",
+    "lastUpdated": "2026-04-19T12:26:30.940Z",
+    "projectPath": "/Users/ueibin",
+    "mcpServers": {
+      "github": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-github@2025.4.8"
+        ]
+      },
+      "context7": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@upstash/context7-mcp@2.1.4"
+        ]
+      },
+      "exa": {
+        "type": "http",
+        "url": "https://mcp.exa.ai/mcp"
+      },
+      "memory": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-memory@2026.1.26"
+        ]
+      },
+      "playwright": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@playwright/mcp@0.0.69",
+          "--extension"
+        ]
+      },
+      "sequential-thinking": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-sequential-thinking@2025.12.18"
+        ]
+      }
+    }
+  },
+  {
+    "id": "jdtls-lsp@claude-plugins-official",
+    "version": "1.0.0",
+    "scope": "project",
+    "enabled": true,
+    "installPath": "/Users/ueibin/.claude/plugins/cache/claude-plugins-official/jdtls-lsp/1.0.0",
+    "installedAt": "2026-04-19T12:26:30.940Z",
+    "lastUpdated": "2026-04-19T12:26:30.940Z",
+    "projectPath": "/Users/ueibin"
+  },
+  {
+    "id": "jdtls@claude-code-lsps",
+    "version": "0.1.0",
+    "scope": "project",
+    "enabled": true,
+    "installPath": "/Users/ueibin/.claude/plugins/cache/claude-code-lsps/jdtls/0.1.0",
+    "installedAt": "2026-04-21T10:32:50.183Z",
+    "lastUpdated": "2026-04-21T10:32:50.183Z",
+    "projectPath": "/Users/ueibin"
+  },
+  {
+    "id": "msbaek-tdd@msbaek-claude-plugins",
+    "version": "1.2.0",
+    "scope": "project",
+    "enabled": true,
+    "installPath": "/Users/ueibin/.claude/plugins/cache/msbaek-claude-plugins/msbaek-tdd/1.2.0",
+    "installedAt": "2026-03-01T10:03:42.666Z",
+    "lastUpdated": "2026-04-18T05:26:15.276Z",
+    "projectPath": "/Users/ueibin"
+  },
+  {
+    "id": "superpowers@claude-plugins-official",
+    "version": "5.1.0",
+    "scope": "project",
+    "enabled": true,
+    "installPath": "/Users/ueibin/.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0",
+    "installedAt": "2026-02-25T11:22:43.845Z",
+    "lastUpdated": "2026-05-05T12:33:03.473Z",
+    "projectPath": "/Users/ueibin"
+  }
+]
