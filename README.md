@@ -2,6 +2,9 @@
 
 Claude Code를 효과적으로 사용하기 위한 개인 설정, 스킬, 환경 구성을 관리하는 dotfiles 레포지토리입니다.
 
+## Special Thanks 
+[29CM 최현웅님](https://github.com/choi1204)
+
 ## 구조
 
 ```
