@@ -9,6 +9,10 @@ LLM-Dot-files/
 │   └── Brewfile                      # brew 설치 패키지 목록
 ├── shell/
 │   └── .zshrc                        # zsh 설정 (alias, function, PATH, source 등)
+├── cmux/
+│   ├── README.md                     # cmux 설정/테마 복원 가이드
+│   ├── cmux.json                     # cmux 앱 설정
+│   └── config.ghostty                # cmux 내장 Ghostty 테마
 ├── claude/
 │   ├── settings/
 │   │   ├── settings.json             # Claude Code 전역 설정
@@ -84,7 +88,24 @@ export PATH="$PATH:/new/path"
 
 ---
 
-### 3. MCP 서버 추가 시
+### 3. cmux 설정 변경 시
+
+`cmux/cmux.json` 또는 `cmux/config.ghostty`에 반영 후 커밋:
+
+```bash
+# 실제 파일 위치
+~/.config/cmux/cmux.json
+~/Library/Application Support/com.cmuxterm.app/config.ghostty
+```
+
+**규칙:**
+- 세션 상태, socket, 브라우저 히스토리, posthog/cache/log/plist 파일은 커밋하지 않음
+- 테마는 `cmux/config.ghostty`에 저장
+- cmux 앱 설정은 file-managed 값만 `cmux/cmux.json`에 명시하고 나머지는 앱 기본값 사용
+
+---
+
+### 4. MCP 서버 추가 시
 
 **Step 1**: `claude/mcp/mcp.json`에 서버 항목 추가 (secrets는 `${ENV_VAR}` 형태로)
 
@@ -106,7 +127,7 @@ claude mcp add <name> -s user -e TOKEN=<your_token> -- npx -y <package>
 
 ---
 
-### 4. Claude 플러그인 추가 시
+### 5. Claude 플러그인 추가 시
 
 `claude/plugins/README.md`의 설치 플러그인 표에 항목 추가:
 
@@ -121,7 +142,7 @@ claude plugins install <plugin-name>
 
 ---
 
-### 5. Claude 커스텀 스킬 추가 시
+### 6. Claude 커스텀 스킬 추가 시
 
 `claude/skills/<skill-name>/SKILL.md` 파일 추가 후 커밋:
 
@@ -139,7 +160,7 @@ cp -r ~/.claude/skills/<new-skill> ~/LLM-Dot-files/claude/skills/
 
 ---
 
-### 6. Claude 설정 변경 시
+### 7. Claude 설정 변경 시
 
 `claude/settings/settings.json` 또는 `settings.local.json` 수정 후 커밋:
 
@@ -151,7 +172,7 @@ cp -r ~/.claude/skills/<new-skill> ~/LLM-Dot-files/claude/skills/
 
 ---
 
-### 7. Codex 설정 변경 시
+### 8. Codex 설정 변경 시
 
 `codex/config.toml`, `codex/AGENTS.md`, `codex/skills/`를 수정 후 커밋:
 
