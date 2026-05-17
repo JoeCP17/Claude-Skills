@@ -136,6 +136,116 @@ bash claude/bin/check-md-rule.sh claude/rules/my-new-rule.md
 
 자동 수정 범위 — 콜론 종결(`...:` → `....`), 골격 스텁(`> Purpose`, `## Tradeoff`, `## 안티패턴`) 삽입까지. 본문 내용은 절대 건드리지 않으므로 작성자가 `TODO:` 자리를 채워야 합니다. 검증 항목·면제 대상 등 상세는 `claude/rules/_meta-rule-authoring.md` 참고.
 
+## 멀티 에이전트 리뷰 — Claude 작성 + Codex 교차 리뷰
+
+**구도**. Claude(Opus) 가 코드/구성을 작성·수정하고 **Codex CLI(GPT-5.5)** 가 독립 모델로 교차 리뷰합니다. 두 모델은 학습 데이터·편향·맹점이 다르므로, 한 모델이 자기 출력을 자가리뷰할 때 빠지는 false-PASS 위험을 낮춥니다.
+
+### 동작 흐름
+
+```
+[Claude Opus] coder 구현 → reviewer 자체 리뷰
+                                │
+                                ├─ production-bound? multi-file? 보안/결제? → YES
+                                │
+                                ▼
+[Codex GPT-5.5] codex review --uncommitted -c sandbox_mode="read-only"
+                                │
+                                ▼
+   양측 Findings 비교 → 합의/불일치 사용자에게 보고
+                                │
+                                ▼
+   둘 다 PASS → push    /    한쪽 FAIL → 사용자 판단 후 fix → 재리뷰
+```
+
+자동 트리거 룰은 `claude/rules/agents.md` 의 "Cross-Agent Review" 섹션 — production-bound · multi-file · 보안 키워드 매치 · 사용자 명시 요청 중 하나라도 해당되면 Claude 가 **선제적으로** Codex 호출.
+
+### 두 가지 사용 방식
+
+**1. 자동 (룰 기반)** — Claude 가 트리거 조건 판단해서 알아서 호출. 사용자 명령 불필요.
+
+**2. 슬래시 커맨드 (`/santa-loop`)** — `everything-claude-code` 플러그인 제공. dual-review convergence loop 까지 자동화 (둘 다 PASS 할 때까지 fix 사이클 최대 3회).
+
+```
+/santa-loop                    # uncommitted changes 대상
+/santa-loop src/Payment.java   # 특정 파일
+```
+
+### 수동 호출 (Codex 단독)
+
+```bash
+# uncommitted 전체
+codex review --uncommitted -c sandbox_mode="read-only"
+
+# 특정 commit
+codex review --commit <SHA> -c sandbox_mode="read-only"
+
+# 브랜치 전체 (base 대비)
+codex review --base main -c sandbox_mode="read-only"
+
+# free-form prompt (특정 관심사)
+codex exec --sandbox read-only "claude/bin/bootstrap.sh 의 멱등성·에러처리만 리뷰"
+```
+
+원칙 — 반드시 `sandbox_mode="read-only"` (또는 `--sandbox read-only`) 로 Codex 가 working tree 를 변경하지 않게 격리.
+
+### 설치 — bootstrap.sh 가 자동 처리
+
+별도 셋업 불필요. `bootstrap.sh` 가 다음을 모두 적용합니다.
+
+| 단계 | 처리 내용 |
+|------|----------|
+| `[brew]` Brewfile | Codex CLI 본체 (`cask "codex"`) 설치 |
+| `[claude-md]` + `[claude-rules]` | `agents.md` 의 Cross-Agent Review 룰을 `~/.claude/rules/` 에 동기화 |
+| `[claude-plugins]` | `everything-claude-code` 플러그인 (`/santa-loop` 포함) 설치 |
+| `[codex-config]` + `[codex-skills]` | `~/.codex/config.toml` (gpt-5.5 high reasoning), `~/.codex/AGENTS.md` (Claude 룰 import), reviewer 프롬프트 7개 복원 |
+
+새 PC 후속 작업은 `codex login` 한 번뿐입니다.
+
+### 설치 검증
+
+```bash
+which codex && codex --version              # codex-cli 0.130.0 이상
+codex login status                           # "Logged in using ..." 출력
+ls ~/.codex/skills/crew-review/SKILL.md      # crew-review 스킬 정상
+ls ~/.codex/prompts/code-reviewer.md         # reviewer 프롬프트 정상
+
+# 한 번 dry-run (작은 commit 으로 동작 확인)
+codex review --commit HEAD -c sandbox_mode="read-only"
+```
+
+### 모델 독립성 보장
+
+`codex/config.toml` 의 핵심 설정.
+
+```toml
+model = "gpt-5.5"
+model_reasoning_effort = "high"
+
+[profiles.fast]
+model = "gpt-5.4-mini"
+
+[profiles.default]
+model = "gpt-5.5"
+```
+
+→ Claude Opus 와 **완전 다른 모델 패밀리** 이므로 동일 편향을 공유하지 않습니다 (santa-method 원칙).
+
+### Codex 가 사용하는 리뷰 자산
+
+`~/.codex/prompts/` 의 도메인별 reviewer 프롬프트 7개를 Codex 가 컨텍스트에 함께 로드합니다.
+
+| 프롬프트 | 용도 |
+|---------|------|
+| `code-reviewer.md` | 일반 코드 리뷰 |
+| `api-reviewer.md` | API 호환성·breaking change |
+| `java-spring-reviewer.md` | Java/Spring 도메인 |
+| `security-reviewer.md` | OWASP Top 10·secret leakage |
+| `performance-reviewer.md` | N+1, 메모리 누수, hot path |
+| `quality-reviewer.md` | 가독성·테스트 커버리지 |
+| `style-reviewer.md` | 컨벤션·네이밍 |
+
+추가로 `~/.codex/AGENTS.md` 가 `claude/rules/coding-style.md`, `git-workflow.md`, `security.md`, `java-lsp-exploration.md`, `token-optimization.md`, `korean-output-style.md` 를 import — **Codex 가 Claude 와 같은 코딩 기준으로 리뷰**합니다.
+
 ## RTK (Rust Token Killer)
 
 LLM 토큰 소비를 **60-90% 절감**하는 CLI 프록시. PreToolUse 훅으로 Claude Code의 모든 Bash 커맨드를 자동 재작성합니다.
